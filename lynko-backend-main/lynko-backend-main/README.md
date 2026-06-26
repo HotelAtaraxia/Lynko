@@ -1,1 +1,0 @@
-#Lynko backend
