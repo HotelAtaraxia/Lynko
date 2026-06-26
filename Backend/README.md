@@ -2,7 +2,7 @@
 
 Este es el núcleo lógico de la plataforma educativa **Lynko**. Se encarga de gestionar la API, la lógica de negocio, las validaciones de usuario y la comunicación con la base de datos.
 
-## 🏗️ Arquitectura del Backend
+##  Arquitectura del Backend
 
 El backend sigue una estructura modular para facilitar el mantenimiento y la escalabilidad:
 
@@ -14,7 +14,7 @@ El backend sigue una estructura modular para facilitar el mantenimiento y la esc
 
 ---
 
-## 🛠️ Requisitos Técnicos (`requirements.txt`)
+##  Requisitos Técnicos (`requirements.txt`)
 
 Para ejecutar este backend, asegúrate de tener instaladas las siguientes dependencias:
 
@@ -28,7 +28,7 @@ Para ejecutar este backend, asegúrate de tener instaladas las siguientes depend
 
 ---
 
-## 🚀 Ejecución
+##  Ejecución
 
 Para iniciar el servidor de desarrollo, sigue estos pasos desde la carpeta `/Backend`:
 
