@@ -1,7 +1,7 @@
-fastapi==0.111.0 Función: Crea el servidor web y maneja todas las rutas (como /api/preguntas-landing). Aplicación: La usamos en app.py y routers/estudiantes.py con APIRouter() para organizar las peticiones.
-uvicorn==0.30.1 Función: Es el "motor" que corre tu aplicación y permite que el código sea visible en el navegador. Aplicación: Lo ejecutamos en la terminal mediante uvicorn main:app --reload para ver los cambios en tiempo real.
-jinja2==3.1.4 Función: Permite insertar datos del servidor (como el nombre del estudiante) dentro de tus archivos HTML. Aplicación: La usamos en routers/estudiantes.py al definir templates = Jinja2Templates(...) y devolver templates.TemplateResponse.
-pydantic==2.7.2 Función: Asegura que los datos recibidos (como correo y contraseñas) cumplan reglas específicas. Aplicación: La aplicamos en la clase EstudianteActualizar para validar formatos de correo y complejidad de contraseñas con @field_validator.
-pydantic-settings==2.3.0 Función: Ayuda a cargar configuraciones del entorno de manera segura. Aplicación: Se utiliza para mantener la configuración de la app limpia y separada del código lógico.
-psycopg2-binary==2.9.9 Función: Permite que Python "hable" con tu base de datos. Aplicación: Es la base de database.py; la usamos para abrir conexiones, ejecutar cursores (conn.cursor()) y hacer los commit() en las consultas SQL.
-python-multipart==0.0.9 Función: Permite recibir datos enviados desde formularios HTML estándar. Aplicación: Es necesaria en la ruta /ajustes-estudiante/{id_usuario}/guardar para poder capturar el Form(...) cuando el estudiante guarda sus cambios de perfil.
+fastapi==0.111.0
+uvicorn==0.30.1
+jinja2==3.1.4
+pydantic==2.7.2
+pydantic-settings==2.3.0
+psycopg2-binary==2.9.9
+python-multipart==0.0.9
