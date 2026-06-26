@@ -29,28 +29,30 @@ Sigue estos pasos en tu terminal para poner en marcha la plataforma:
 ```bash
 git clone [https://github.com/HotelAtaraxia/Lynko.git](https://github.com/HotelAtaraxia/Lynko.git)
 cd Lynko
-
+```
 ### 2. Configurar el entorno virtual
 Es vital para aislar las dependencias y evitar errores de librerías:
 
 En Windows:
 
-Bash
+```Bash
 python -m venv venv
 venv\Scripts\activate
+```
 ### 3. Instalar dependencias
 Dentro de la carpeta raíz, ejecuta:
 
-Bash
+```Bash
 pip install fastapi uvicorn pydantic pydantic-settings psycopg2-binary jinja2
+```
 ### 4. Ejecución del servidor
 Navega a la carpeta /Backend y ejecuta el servidor con Uvicorn:
 
-Bash
+```Bash
 cd Backend
 uvicorn main:app --reload
 La aplicación estará disponible en http://127.0.0.1:8000.
-
+```
 ### Conexión a Base de Datos
 La comunicación con los datos se centraliza en el archivo database.py ubicado en /Backend:
 
