@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lynko Admin - Gestión de Estudiantes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/adim.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-content">
+            <div class="logo-container">
+                <div class="logo-placeholder">
+                    <img src="https://cdn.phototourl.com/free/2026-06-08-2a556232-b138-49a7-a830-66b7ce8a4f19.png" alt="Lynko Logo">
+                </div>
+                <p>Panel de Control</p>
+            </div>
+            <ul class="nav-menu">
+    <li class="nav-item"><a href="/admin"><i>📊</i> Inicio</a></li>
+    
+    <li class="nav-item"><a href="/admin/estudiantes"><i>👥</i> Alumnos y Ranking</a></li>  
+    
+    <li class="nav-item"><a href="/admin/nuevas-preguntas"><i>➕</i> Crear Preguntas</a></li>   
+    
+    <li class="nav-item"><a href="/admin/preguntas"><i>📝</i> Banco de Preguntas</a></li>   
+</ul>
+ 
+        </div>
+        <div style="padding: 20px;">
+            <a href="/login" style="color: white; text-decoration: none; font-weight: 700; font-size: 14px;">🚪 Cerrar Sesión</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="admin-header" style="margin-bottom: 25px;">
+            
+            <div class="search-container" style="margin-bottom: 20px;">
+                <form action="/admin/estudiantes" method="GET" style="display: flex; gap: 10px;">
+                    <input type="text" name="q" placeholder="🔍 Buscar estudiante por nombre..." 
+                    value="{{ query_busqueda or '' }}" 
+                    style="padding: 10px; width: 100%; max-width: 900px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Nunito', sans-serif;">
+                    <button type="submit" class="btn-primary" style="padding: 10px 20px; width: 100px;">Buscar</button>
+                    {% if query_busqueda %}
+                    <a href="/admin/estudiantes" class="btn-modal-cancel" style="padding: 10px 20px; text-decoration: none; line-height: 24px;">Limpiar</a>
+                    {% endif %}
+                </form>
+            </div>
+
+            <h2>Gestión de Estudiantes 🧑‍🎓</h2>
+            <p>Modifica la información de los alumnos o dálos de baja del ecosistema.</p>       
+        </header>
+
+        {% if msg %}
+        <div class="alert-success" style="background-color: #E8F5E9; color: #2E7D32; padding: 12px; border-radius: 10px; margin-bottom: 20px; font-weight: 700;">
+            ✨ {{ msg }}
+        </div>
+        {% endif %}
+
+        <section class="admin-card">
+            <h3><i>👥</i> Lista de Alumnos</h3>
+            <div class="table-container">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Correo Electrónico</th>
+                            <th>Nivel</th>
+                            <th>Puntaje Total (EXP)</th>
+                            <th style="text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                       {% for estudiante in usuarios %}
+<tr>
+    <td><strong>#{{ estudiante[0] }}</strong></td>
+    <td>{{ estudiante[1] }}</td>
+    <td>{{ estudiante[2] }}</td>
+    <td>
+        <span style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+            Lvl {{ estudiante[4] if estudiante[4] is not none else 1 }}
+        </span>
+    </td>
+    <td>
+        <span class="badge-points" style="background-color: #FFF9C4; color: #F57F17; padding: 4px 8px; border-radius: 8px; font-weight: 800;">
+            ⭐ {{ estudiante[3] }} EXP
+        </span>
+    </td>
+    <td style="text-align: center;">
+        <div style="display: flex; gap: 8px; justify-content: center;">
+            <button class="btn-primary" style="padding: 6px 12px; font-size: 13px;" 
+                    onclick="abrirModalEdicion('{{ estudiante[0] }}', '{{ estudiante[1] }}', '{{ estudiante[2] }}', '{{ estudiante[3] }}')">
+                ✏️ Editar
+            </button>
+            <a href="/admin/estudiantes/eliminar/{{ estudiante[0] }}" class="btn-delete" 
+               onclick="return confirm('¿Seguro que deseas dar de baja a este estudiante?')">
+               🗑️ Dar de Baja
+            </a>
+        </div>
+    </td>
+    <td>
+        <a href="/admin/estudiantes/ver/{{ estudiante[0] }}" class="btn-ver-mas" style="text-decoration: none;">
+            🙊 Ver Detalles
+        </a>
+    </td>
+</tr>
+{% else %}
+<tr>
+    <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">No hay estudiantes registrados.</td>
+</tr>
+{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div id="modalEditarAlumno" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 1000;">
+            <div class="admin-card" style="width: 100%; max-width: 450px; background: white; border-radius: 20px; padding: 30px;">
+                <h3 style="margin-bottom: 5px;">✏️ Editar Estudiante</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Actualiza los campos del formulario.</p>
+                
+                <form action="/admin/estudiantes/editar" method="POST">
+                    <input type="hidden" name="id_usuario" id="edit_id_usuario">
+
+                    <div class="form-group">
+                        <label>Nombre del Alumno</label>
+                        <input type="text" name="nombre" id="edit_nombre" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Correo Electrónico</label>
+                        <input type="email" name="correo" id="edit_correo" class="form-input" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Puntaje Total (EXP)</label>
+                        <input type="number" name="puntaje_total" id="edit_puntaje" class="form-input" min="0" required>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                        <button type="button" class="btn-delete" onclick="cerrarModalEdicion()">Cancelar</button>
+                        <button type="submit" class="btn-primary">Guardar Cambios 🚀</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function abrirModalEdicion(id, nombre, correo, puntaje) {
+            document.getElementById('edit_id_usuario').value = id;
+            document.getElementById('edit_nombre').value = nombre;
+            document.getElementById('edit_correo').value = correo;
+            document.getElementById('edit_puntaje').value = parseInt(puntaje) || 0;
+            document.getElementById('modalEditarAlumno').style.display = 'flex';
+        }
+
+        function cerrarModalEdicion() {
+            document.getElementById('modalEditarAlumno').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalEditarAlumno');
+            if (event.target == modal) { modal.style.display = 'none'; }
+        }
+    </script>
+</body>
+</html>

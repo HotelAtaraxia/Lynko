@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lynko Admin - Banco de Preguntas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght=400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/adim.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-content">
+            <div class="logo-container">
+                <div class="logo-placeholder">
+                    <img src="https://cdn.phototourl.com/free/2026-06-08-2a556232-b138-49a7-a830-66b7ce8a4f19.png" alt="Lynko Logo">
+                </div>
+                <p>Panel de Control</p>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/admin"><i>📊</i> Inicio</a></li>
+                <li class="nav-item"><a href="/admin/estudiantes"><i>👥</i> Alumnos y Ranking</a></li>  
+                <li class="nav-item"><a href="/admin/nuevas-preguntas"><i>➕</i> Crear Preguntas</a></li>   
+                <li class="nav-item"><a href="/admin/preguntas"><i>📝</i> Banco de Preguntas</a></li>   
+            </ul>
+        </div>
+        <div style="padding: 20px;">
+            <a href="/login" style="color: white; text-decoration: none; font-weight: 700; font-size: 14px;">🚪 Cerrar Sesión</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="admin-header" style="margin-bottom: 25px;">
+            <h2>Banco de Preguntas 🧪➗📖</h2>
+            <p>Gestiona y elimina los retos activos dentro del sistema educativo de Lynko.</p>
+        </header>
+
+        {% if msg %}
+        <div class="alert-success" style="background-color: #E8F5E9; color: #2E7D32; padding: 12px; border-radius: 10px; margin-bottom: 20px; font-weight: 700;">
+            ✨ {{ msg }}
+        </div>
+        {% endif %}
+
+        <section class="admin-card">
+            <h3><i>❓</i> Cuestionarios Activos y Respuestas</h3>
+            <div class="table-container">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">ID</th>
+                            <th style="width: 130px;">Materia</th>
+                            <th>Enunciado y Opciones de Respuesta</th>
+                            <th style="text-align: center; width: 100px;">Puntos</th>
+                            <th style="text-align: center; width: 180px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pregunta in preguntas %}
+                        <tr>
+                            <td><strong>#{{ pregunta.id_pregunta }}</strong></td>
+                            <td><span style="background: #edf2f7; padding: 4px 8px; border-radius: 6px; font-size: 13px; font-weight: 700;">{{ pregunta.materia }}</span></td>
+                            <td>
+                                <div style="color: #2d3748; font-weight: 700; margin-bottom: 8px; font-size: 15px;">
+                                    {{ pregunta.pregunta }}
+                                </div>
+                                
+                                <div class="respuestas-banco" style="display: flex; flex-direction: column; gap: 4px; padding-left: 10px; border-left: 3px solid #e2e8f0; margin-top: 6px;">
+                                    {% for op in pregunta.opciones %}
+                                        {% if op.opcion %}
+                                            <div style="font-size: 13px; font-weight: 600; color: {% if op.es_correcta %}#2e7d32{% else %}#718096{% endif %};">
+                                                {% if op.es_correcta %}
+                                                    ✅ <span style="background-color: #e8f5e9; padding: 2px 6px; border-radius: 4px;">{{ op.opcion }} (Correcta)</span>
+                                                {% else %}
+                                                    ⚪ <span>{{ op.opcion }}</span>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td style="text-align: center; font-weight: bold; color: #3182ce;">+{{ pregunta.puntos }} EXP</td>
+                            <td style="text-align: center;">
+                                <div style="display: flex; gap: 6px; justify-content: center;">
+                                    <button class="btn-primary" style="padding: 6px 12px; font-size: 13px; min-width: 70px;" 
+                                    onclick="abrirModalEdicionPregunta('{{ pregunta.id_pregunta }}', '{{ pregunta.id_materia }}', '{{ pregunta.pregunta }}', '{{ pregunta.puntos }}')">
+                                    ✏️ Editar
+                                </button>
+                                    <a href="/admin/preguntas/borrar/{{ pregunta.id_pregunta }}" class="btn-delete" style="padding: 6px 12px; font-size: 13px;" onclick="return confirm('¿Estás completamente seguro de eliminar esta pregunta del sistema?')">🗑️</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">No hay preguntas creadas en este momento.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div id="modalEditarPregunta" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 1000;">
+            <div class="admin-card" style="width: 100%; max-width: 500px; background: white; border-radius: 20px; padding: 30px;">
+                <h3 style="margin-bottom: 5px;">✏️ Editar Desafío Académico</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Ajusta el enunciado base o su recompensa en experiencia.</p>
+                
+                <form action="/admin/preguntas/editar" method="POST">
+    <input type="hidden" name="id_pregunta" id="edit_id_pregunta">
+
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label style="display: block; font-weight: 700; margin-bottom: 5px;">Materia</label>
+        <select name="id_materia" id="edit_materia_pregunta" class="form-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Nunito', sans-serif;" required>
+            <option value="1">Matemáticas ➗</option>
+            <option value="2">Español 📖</option>
+            <option value="3">Biología 🧪</option>
+        </select>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label style="display: block; font-weight: 700; margin-bottom: 5px;">Enunciado de la Pregunta</label>
+        <textarea name="pregunta" id="edit_texto_pregunta" class="form-input" style="width: 100%; height: 80px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-family: 'Nunito', sans-serif; resize: none;" required></textarea>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 15px;">
+        <label style="display: block; font-weight: 700; margin-bottom: 5px;">Recompensa (EXP)</label>
+        <input type="number" name="puntos" id="edit_puntos_pregunta" class="form-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc;" min="0" required>
+    </div>
+
+    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px;">
+        <button type="button" class="btn-delete" style="padding: 10px 20px;" onclick="cerrarModalEdicionPregunta()">Cancelar</button>
+        <button type="submit" class="btn-primary" style="padding: 10px 20px;">Guardar Cambios 🚀</button>
+    </div>
+</form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function abrirModalEdicionPregunta(id, idMateria, pregunta, puntos) {
+            document.getElementById('edit_id_pregunta').value = id;
+            document.getElementById('edit_materia_pregunta').value = idMateria; // ⬅️ Selecciona la materia correcta automáticamente 
+            document.getElementById('edit_texto_pregunta').value = pregunta;
+            document.getElementById('edit_puntos_pregunta').value = parseInt(puntos) || 0;
+            document.getElementById('modalEditarPregunta').style.display = 'flex';
+        }
+
+        function cerrarModalEdicionPregunta() {
+            document.getElementById('modalEditarPregunta').style.display = 'none';
+        }
+
+        // Cerrar haciendo clic afuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalEditarPregunta');
+            if (event.target == modal) { modal.style.display = 'none'; }
+        }
+    </script>
+</body>
+</html>

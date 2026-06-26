@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lynko - ¡Aprende Jugando!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/landing.css">
+</head>
+<body>
+
+    <header id="main-header">
+        <div class="logo-container" id="header-logo-box">   
+            <img src="https://cdn.phototourl.com/free/2026-06-08-2a556232-b138-49a7-a830-66b7ce8a4f19.png" alt="Lynko Logo" id="lynko-nav-logo">
+            <h1 class="logo-texto" style="font-family: 'Fredoka', sans-serif;">Lynko</h1>
+        </div>
+        <nav class="nav-links" id="header-navigation">
+            <a href="/login" class="btn-secondary">Iniciar Sesión 🚪</a>
+            <a href="/registro" class="btn-primary">Registrarse ✨</a>
+        </nav>
+    </header>
+
+    <main id="hero-section">
+        <div class="hero-contenido" id="hero-left-side">
+            <h2 class="hero-titulo" style="font-family: 'Fredoka', sans-serif;">¡Aprender nunca fue tan divertido! 🚀</h2>
+            <p class="hero-subtitulo">Acompaña a nuestro lince educativo en una aventura llena de matemáticas, español, biología y grandes recompensas en medallas virtuales.</p>
+            <div class="hero-botones" id="hero-action-box">
+                <a href="/registro" class="btn-cta">¡Empezar Aventura Gratis! 🐾</a>
+            </div>
+        </div>
+        <div class="hero-imagen-div" id="hero-mascot-wrapper">
+            </div>
+    </main>
+
+    <section id="interactive-preview-section" style="background-color: #FFF8F0; padding: 5px 0;">
+        <div id="preview-container" class="admin-card" style="max-width: 800px; margin: 40px auto; border: 3px solid #FFBE98; border-radius: 25px; background: #FFFFFF; padding: 30px; text-align: center; box-shadow: 0 10px 25px rgba(230, 110, 0, 0.08);">
+            
+
+<div id="preview-header">
+    <span class="quiz-icon">🎮</span>
+    <h3 class="quiz-title">¡Haz una pequeña prueba!</h3>
+    <p class="quiz-subtitle">Demuestra tu talento resolviendo este reto rápido del lince:</p>
+</div>
+
+<div class="quiz-container">
+    
+    <button id="btn-quiz-prev" class="quiz-nav-btn" onclick="cambiarPregunta(-1)">◀</button>
+
+    <div id="preview-quiz-box" class="quiz-card">
+        <div id="quiz-meta-info" class="quiz-meta">
+            <span id="quiz-materia">🧠 CARGANDO...</span>
+            <span id="quiz-puntos">🪙 Recompensa: +0 EXP</span>
+        </div>
+        
+        <div class="quiz-body-wrapper">
+            <h4 id="quiz-enunciado" class="quiz-question">Cargando el próximo reto escolar... 🐾</h4>
+            <div id="quiz-materia-avatar" class="quiz-avatar-decor">✨</div>
+        </div>
+        
+        <div id="quiz-options-layout" class="quiz-options-grid">
+            </div>
+
+        <div id="quiz-feedback" class="quiz-feedback-box"></div>
+    </div>
+
+    <button id="btn-quiz-next" class="quiz-nav-btn" onclick="cambiarPregunta(1)">▶</button>
+</div>
+
+            <p style="font-size: 13px; color: #888; font-weight: 600;">✨ ¡En la plataforma acumulas rachas diarias de estudio y desbloqueas avatares!</p>
+        </div>
+    </section>
+
+    <section id="features-section">
+        <div class="section-title-container" id="features-header-box">
+            <h3 style="font-family: 'Fredoka', sans-serif; font-size: 28px;">¿Qué descubrirás en Lynko? 🌟</h3>
+        </div>
+        
+        <div class="features-grid" id="subjects-cards-layout">
+            <div class="feature-card" id="card-math">
+                <div class="card-icon math-bg">📐</div>
+                <h4 style="font-family: 'Fredoka', sans-serif;">Matemáticas</h4>
+                <p>Desafíos numéricos, sumas interactivas y retos lógicos diseñados para mentes brillantes.</p>
+            </div>
+            
+            <div class="feature-card" id="card-biology">
+                <div class="card-icon bio-bg">🍃</div>
+                <h4 style="font-family: 'Fredoka', sans-serif;">Biología</h4>
+                <p>Explora la naturaleza, los ecosistemas de los animales y los secretos divertidos del cuerpo humano.</p>
+            </div>
+            
+            <div class="feature-card" id="card-spanish">
+                <div class="card-icon esp-bg">📚</div>
+                <h4 style="font-family: 'Fredoka', sans-serif;">Español</h4>
+                <p>Mejora tu comprensión lectora, ortografía y domina las palabras jugando con cuentos interactivos.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer id="main-footer">
+        <div id="footer-credits">
+            <p>&copy; 2026 Lynko - Proyecto Técnico de Formación SENA. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+</body>
+
+<script>
+    let preguntasLanding = [];
+    let indiceActual = 0;
+
+    //  Cargar preguntas desde la API 
+    async function cargarQuizLanding() {
+        try {
+            const response = await fetch('/api/preguntas-landing');
+            if (!response.ok) throw new Error("Error en la petición");
+            preguntasLanding = await response.json();
+            
+            if (preguntasLanding.length > 0) {
+                mostrarPregunta(indiceActual);
+            }
+        } catch (error) {
+            console.error("No se pudo estructurar el quiz dinámico:", error);
+            const enunciado = document.getElementById('quiz-enunciado');
+            if (enunciado) {
+                enunciado.innerText = "¡Vaya! No se pudieron cargar los desafíos en este momento. 🐾";
+            }
+        }
+    }
+
+    //  Renderizar la pregunta en los contenedores del HTML
+    function mostrarPregunta(index) {
+        if (!preguntasLanding[index]) return;
+        
+        const item = preguntasLanding[index];
+        
+        // Limpiar estados 
+        const feedback = document.getElementById('quiz-feedback');
+        if (feedback) {
+            feedback.style.display = 'none';
+            feedback.style.padding = '0px';
+        }
+
+        // Detectar materia para asignar un emoji 
+        const avatarDecor = document.getElementById('quiz-materia-avatar');
+        if (avatarDecor) {
+            let emojiMateria = "✨";
+            const materiaTexto = item.materia.toLowerCase();
+            
+            if (materiaTexto.includes("mat")) emojiMateria = "🧮";
+            else if (materiaTexto.includes("bio") || materiaTexto.includes("nat")) emojiMateria = "🍃";
+            else if (materiaTexto.includes("esp") || materiaTexto.includes("len")) emojiMateria = "📚";
+            
+            avatarDecor.innerText = emojiMateria;
+        }
+
+        // Actualizar Textos 
+        document.getElementById('quiz-materia').innerText = item.materia.toUpperCase();
+        document.getElementById('quiz-puntos').innerText = `🪙 Recompensa: +${item.puntos} EXP`;
+        document.getElementById('quiz-enunciado').innerText = item.pregunta;
+
+        // Renderizar grilla 
+        const opcionesLayout = document.getElementById('quiz-options-layout');
+        opcionesLayout.innerHTML = '';
+
+        item.opciones.forEach((opcion) => {
+            const boton = document.createElement('button');
+            boton.className = 'preview-opt-btn';
+            boton.innerText = opcion.opcion;
+            
+            //  clic para verificar respuesta
+            boton.onclick = () => verificarRespuesta(opcion.es_correcta, boton);
+            opcionesLayout.appendChild(boton);
+        });
+    }
+
+    // Verificar si la respuesta  es la correcta
+    function verificarRespuesta(esCorrecta, botonSeleccionado) {
+        const feedback = document.getElementById('quiz-feedback');
+        const todosLosBotones = document.querySelectorAll('.preview-opt-btn');
+        
+        // Bloquear  los botones para evitar múltiples intentos 
+        todosLosBotones.forEach(btn => btn.disabled = true);
+
+        if (feedback) {
+            feedback.style.padding = '15px';
+            if (esCorrecta) {
+                // Estilo interactivo exitoso 
+                botonSeleccionado.style.background = '#E8F5E9';
+                botonSeleccionado.style.borderColor = '#4CAF50';
+                botonSeleccionado.style.color = '#2E7D32';
+                botonSeleccionado.style.boxShadow = '0 4px 0 #4CAF50';
+                
+                feedback.style.background = '#E8F5E9';
+                feedback.style.color = '#2E7D32';
+                feedback.style.border = '2px solid #C8E6C9';
+                feedback.innerText = "¡Excelente! Respuesta correcta. 🚀 ¡Eres un lince!";
+            } else {
+                // Estilo interactivo erróneo 
+                botonSeleccionado.style.background = '#FFEBEE';
+                botonSeleccionado.style.borderColor = '#FF5252';
+                botonSeleccionado.style.color = '#C62828';
+                botonSeleccionado.style.boxShadow = '0 4px 0 #FF5252';
+                
+                feedback.style.background = '#FFEBEE';
+                feedback.style.color = '#C62828';
+                feedback.style.border = '2px solid #FFCDD2';
+                feedback.innerText = "¡Casi! Intenta con otra materia o revisa bien el enunciado. 🐾";
+            }
+            feedback.style.display = 'block';
+        }
+    }
+
+    // ◀ ▶ Control de paginación cíclica
+    function cambiarPregunta(direccion) {
+        if (preguntasLanding.length === 0) return;
+        
+        indiceActual += direccion;
+        
+        if (indiceActual >= preguntasLanding.length) indiceActual = 0; // Vuelve al inicio
+        if (indiceActual < 0) indiceActual = preguntasLanding.length - 1; // Va al último
+        
+        mostrarPregunta(indiceActual);
+    }
+
+    // Iniciar la carga de la API cuando el DOM este
+    document.addEventListener("DOMContentLoaded", cargarQuizLanding);
+</script>
+
+</html>
