@@ -1,0 +1,78 @@
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; }
+        
+.main-content-wrapper {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            background-color: var(--bg-main, #FDF9F5);
+            box-sizing: border-box;
+        }
+
+        .form-container {
+            background: var(--card-bg, #FFFFFF);
+            width: 100%;
+            max-width: 650px; /* Ancho ideal elegante */
+            padding: 35px;
+            border-radius: 25px;
+            border: 1px solid #F0F0F0;
+            box-shadow: 0 10px 30px rgba(255, 122, 0, 0.05);
+        }
+
+        .sidebar-footer-btn a {
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+
+        .form-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 550px;
+            padding: 35px;
+            border-radius: 25px;
+            border: 1px solid #F0F0F0;
+            box-shadow: 0 10px 30px rgba(255, 122, 0, 0.05);
+        }
+        h2 { font-weight: 900; color: #2D3748; margin-bottom: 8px; text-align: center; }
+        .subtitle { color: #718096; font-size: 14px; text-align: center; margin-bottom: 25px; }
+        
+        .form-group { margin-bottom: 18px; display: flex; flex-direction: column; }
+        .form-group label { font-size: 14px; font-weight: 700; color: #666; margin-bottom: 6px; }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px 14px; border: 2px solid #F0F0F0; border-radius: 12px;
+            font-size: 14px; font-weight: 600; background: #FAFAFA; outline: none; transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--orange-primary); background: #FFF; }
+        
+        .options-block { background: #FFFBF7; padding: 15px; border-radius: 15px; border: 1px dashed #FFD4B2; margin-bottom: 20px; }
+        .options-block h4 { font-size: 14px; font-weight: 800; color: var(--orange-dark); margin-bottom: 12px; }
+        
+        .btn-submit {
+            background: var(--orange-primary); 
+            color: white; 
+            border: none; 
+            padding: 14px;
+            border-radius: 20px; 
+            font-weight: 800; 
+            font-size: 16px; 
+            cursor: pointer; 
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(255, 122, 0, 0.2); 
+            transition: background 0.2s;
+        }
+        .btn-submit:hover { 
+            background: var(--orange-dark); 
+        }
+
+        sidebar-footer-btn{
+            color: white; 
+            text-decoration: none; 
+            font-weight: 700; 
+            font-size: 14px;
+        }

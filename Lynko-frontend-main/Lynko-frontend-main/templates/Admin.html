@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lynko - Panel de Administración</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght=500;700&family=Nunito:wght=400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="/static/adim.css">
+</head>
+<body id="admin-body">
+
+    <aside class="sidebar">
+        <div class="sidebar-content">
+            <div class="logo-container">
+                <div class="logo-placeholder">
+                    <img src="https://cdn.phototourl.com/free/2026-06-08-2a556232-b138-49a7-a830-66b7ce8a4f19.png" alt="Lynko Logo">
+                </div>
+                <p class="logo-slogan">Panel de Control Central</p>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item active"><a href="/admin"><i>📊</i> Inicio</a></li>
+                    <li class="nav-item"><a href="/admin/estudiantes"><i>👥</i> Alumnos y Ranking</a></li>  
+                    <li class="nav-item"><a href="/admin/nuevas-preguntas"><i>➕</i> Crear Preguntas</a></li>   
+                    <li class="nav-item"><a href="/admin/preguntas"><i>📝</i> Banco de Preguntas</a></li>   
+                </ul>
+            </nav>
+        </div>
+        <div class="sidebar-footer-btn" style="padding-top: 20px;">
+            <a href="/login" style="color: white; text-decoration: none; font-weight: 700; font-size: 14px;">🚪 Cerrar Sesión</a>
+        </div>
+    </aside>
+
+    <main id="main-content-wrapper">
+        <header class="dashboard-header">
+            <div class="welcome-text">
+                <h1>Panel de Rendimiento Global 📈</h1>
+                <p>Estadísticas del sistema y estado general de la plataforma educativa.</p>
+            </div>
+        </header>
+
+        <div class="admin-layout" style="display: flex; flex-direction: column; gap: 30px;">
+            
+            <section class="metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+                <div class="admin-card" style="text-align: center; padding: 20px;">
+                    <h3>👥 Total Estudiantes</h3>
+                    <p style="font-size: 32px; font-weight: 800; color: #ff8c00; margin: 10px 0;">{{ total_estudiantes }}</p>
+                </div>
+                <div class="admin-card" style="text-align: center; padding: 20px;">
+                    <h3>📝 Banco de Preguntas</h3>
+                    <p style="font-size: 32px; font-weight: 800; color: #4caf50; margin: 10px 0;">{{ total_preguntas }}</p>
+                </div>
+                <div class="admin-card" style="text-align: center; padding: 20px;">
+                    <h3>🏆 Promedio EXP</h3>
+                    <p style="font-size: 32px; font-weight: 800; color: #2196f3; margin: 10px 0;">{{ promedio_exp }} pts</p>
+                </div>
+            </section>
+            
+            <section class="admin-card full-width-section">
+                <h3><i>📝</i> Últimas Preguntas Agregadas recientemente</h3>
+                <div class="table-container">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Materia</th>
+                                <th>Enunciado de la Pregunta</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pregunta in ultimas_preguntas %}
+                            <tr>
+                                <td>#{{ pregunta[0] }}</td>
+                                <td><span class="status-badge" style="background: #ffe0b2; color: #e65100; font-weight: 700; padding: 4px 8px; border-radius: 6px;">{{ pregunta[1] }}</span></td>
+                                <td>{{ pregunta[2] }}</td>
+                                <td>
+                                    <a href="/admin/preguntas" class="btn-table-edit" style="text-decoration: none; background-color: #f39121; color: white; display: inline-block; padding: 5px 10px; font-size: 12px;">Gestionar Banco</a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: #888;">No hay preguntas registradas en el sistema aún.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="admin-card full-width-section">
+                <h3><i>🏆</i> Estudiantes con Mejor Rendimiento (Top 5)</h3>
+                <div class="table-container">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Estudiante</th>
+                                <th>Nivel</th>
+                                <th>Puntaje Total</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for estudiante in mejores_estudiantes %}
+                            <tr>
+                                <td><strong>#{{ estudiante[0] }}</strong></td>
+                                <td>{{ estudiante[1] }}</td>
+                                <td><span style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Lvl {{ estudiante[4] if estudiante[4] is not none else 1 }}</span></td>
+                                <td><span style="background-color: #FFF9C4; color: #F57F17; padding: 4px 8px; border-radius: 8px; font-weight: 800;">⭐ {{ estudiante[3] }} EXP</span></td>
+                                <td>
+                                    <a href="/admin/estudiantes/ver/{{ estudiante[0] }}" class="btn-table-edit" style="text-decoration: none; display: inline-block; padding: 5px 10px; font-size: 12px; background-color: #f39121; color: white;">Ver Expediente</a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: #888;">No hay estudiantes matriculados en el sistema.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 15px; text-align: right;">
+                    <a href="/admin/estudiantes" style="color: #ff8c00; text-decoration: none; font-weight: 700; font-size: 14px;">Ver Lista Completa y Buscar Alumnos ➔</a>
+                </div>
+            </section>
+
+            <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div class="admin-card" style="padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin-bottom: 10px;">➕ Expandir Contenido Académico</h3>
+                        <p style="font-size: 14px; color: #666; line-height: 1.4;">Agrega nuevos retos, define sus opciones múltiples y asigna recompensas de EXP para los alumnos de Lynko.</p>
+                    </div>
+                    <a href="/admin/nuevas-preguntas" class="btn-primary" style="text-decoration: none; display: inline-block; text-align: center; margin-top: 15px; padding: 10px;">Crear Nueva Pregunta</a>
+                </div>
+
+                <div class="admin-card" style="padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin-bottom: 10px;">⚙️ Mantenimiento del Sistema</h3>
+                        <p style="font-size: 14px; color: #666; line-height: 1.4;">Consulta registros escolares, modifica credenciales de alumnos o dálos de baja temporalmente del ecosistema.</p>
+                    </div>
+                    <a href="/admin/estudiantes" class="btn-primary" style="text-decoration: none; display: inline-block; text-align: center; margin-top: 15px; padding: 10px; background-color: #718096;">Administrar Matrículas</a>
+                </div>
+            </section>
+
+        </div>
+    </main>
+</body>
+</html>
