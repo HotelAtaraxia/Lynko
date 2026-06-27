@@ -1,5 +1,6 @@
 import re
-from database import obtener_conexion
+# Cambiamos la importación para que busque dentro de la carpeta config
+from config.database import obtener_conexion
 
 def verificar_credenciales_login(correo: str, contrasena: str):
     conn = obtener_conexion()
