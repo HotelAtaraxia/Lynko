@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 # Importación de funciones controladoras desde la capa del Modelo
-from models.admin import (
+from ..models.admin import (
     obtener_datos_panel_admin,
     crear_nueva_pregunta_db,
     obtener_listado_preguntas_completo,
