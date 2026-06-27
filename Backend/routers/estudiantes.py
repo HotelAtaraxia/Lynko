@@ -1,56 +1,267 @@
+import os
+import re
+from datetime import datetime
+from typing import Optional
 from fastapi import APIRouter, Request, Form, HTTPException, Query, status, responses
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from typing import Optional
-import os
+from pydantic import BaseModel, Field, field_validator
 
-from models.estudiante import (
-    consultar_preguntas_landing, 
-    consultar_dashboard_estudiante, 
+# Importaciones semánticas desde la capa del Modelo
+from models.estudiantes import (
     obtener_datos_base_estudiante,
-    obtener_conexion
+    registrar_sesion_db,
+    obtener_preguntas_landing_db,
+    obtener_progreso_dashboard,
+    obtener_materias_y_progreso,
+    obtener_lista_examenes,
+    insertar_intento_examen,
+    obtener_listado_actividades,
+    obtener_reto_semanal_activo,
+    obtener_logros_estudiante,
+    actualizar_perfil_db,
+    eliminar_estudiante_permanente
 )
-from schemas.estudiante import EstudianteActualizar
 
+# Configuración del directorio base subiendo un nivel desde /routers
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 templates = Jinja2Templates(directory=BASE_DIR)
 
+# Inicializamos el router independiente
 router = APIRouter()
 
+
+# --- Esquemas de Validación Pydantic ---
+class EstudianteActualizar(BaseModel):
+    nombre: str = Field(..., min_length=2, description="El nombre debe tener al menos 2 letras")
+    correo: str = Field(..., description="Correo electrónico del estudiante")
+    contrasena: str = Field(..., min_length=8, description="La contraseña debe tener mínimo 8 caracteres")
+
+    @field_validator('contrasena')
+    @classmethod
+    def validar_complejidad_contrasena(cls, v: str) -> str:
+        if not re.search(r"[a-zA-Z]", v) or not re.search(r"[0-9]", v):
+            raise ValueError("La contraseña debe combinar letras y números.")
+        if len(set(v)) < 4:
+            raise ValueError("La contraseña debe tener más variedad de caracteres diferentes.")
+        return v
+
+    @field_validator('correo')
+    @classmethod
+    def validar_formato_correo(cls, v: str) -> str:
+        if "@" not in v or "." not in v:
+            raise ValueError("El correo electrónico no es válido. ¡Revisa el formato!")
+        return v
+
+
+# --- Funciones Internas de Soporte / Wrappers ---
+def registrar_sesion(id_usuario: int, token: str):
+    """
+    Registra el inicio de sesión llamando al controlador de base de datos.
+    """
+    registrar_sesion_db(id_usuario, token)
+
+
+# --- API Pública de la Landing Page ---
 @router.get("/api/preguntas-landing")
 def obtener_preguntas_landing():
-    preguntas = consultar_preguntas_landing()
-    if not preguntas:
+    """
+    Retorna preguntas aleatorias multi-materia para la landing pública o un fallback en JSON.
+    """
+    preguntas_data = obtener_preguntas_landing_db()
+    
+    if not preguntas_data:
+        # Respaldar datos si la base de datos se encuentra vacía inicialmente
         return [
             {
                 "id_pregunta": 0,
                 "materia": "MATEMÁTICAS",
-                "pregunta": "Si el lince Lynko recolecta 5 manzanas por la mañana y 7 por la tarde... 🍎",
+                "pregunta": "Si el lince Lynko recolecta 5 manzanas por la mañana y 7 por la tarde, ¿cuántas manzanas tiene en total? 🍎",
                 "puntos": 15,
-                "opciones": [{"opcion": "B) 12 manzanas", "es_correcta": True}]
+                "opciones": [
+                    {"opcion": "A) 10 manzanas", "es_correcta": False},
+                    {"opcion": "B) 12 manzanas", "es_correcta": True},
+                    {"opcion": "C) 15 manzanas", "es_correcta": False},
+                    {"opcion": "D) 9 manzanas", "es_correcta": False}
+                ]
             }
         ]
-    return preguntas
+    return preguntas_data
+
+
+# --- Rutas de Navegación del Estudiante (Vistas HTML) ---
 
 @router.get("/inicio-estudiante/{id_usuario}", response_class=HTMLResponse)
 def dashboard_estudiante_logeado(id_usuario: int, request: Request, vista_rapida: Optional[bool] = Query(None)):
-    datos, progreso, imagenes = consultar_dashboard_estudiante(id_usuario)
+    """
+    Despliega la vista inicial del estudiante recopilando datos generales y porcentajes de avance.
+    """
+    # Obtenemos la información agregada y limpia desde el modelo
+    datos_usuario, progreso_estudiante, imagenes_materias = obtener_progreso_dashboard(id_usuario)
+            
     return templates.TemplateResponse(
-        request=request, name="inicio_lynko.html",
-        context={"request": request, "id_usuario": id_usuario, "vista_rapida": vista_rapida, "progreso": progreso, "imagenes": imagenes, **datos}
+        request=request, 
+        name="inicio_lynko.html",
+        context={
+            "request": request, 
+            "id_usuario": id_usuario, 
+            "vista_rapida": vista_rapida, 
+            "progreso": progreso_estudiante, 
+            "imagenes": imagenes_materias, 
+            **datos_usuario
+        }
     )
+
+
+@router.get("/materias-estudiante/{id_usuario}", response_class=HTMLResponse)
+def vista_materias(request: Request, id_usuario: int):
+    """
+    Obtiene el listado general de asignaturas y calcula el porcentaje de lecciones completadas.
+    """
+    datos_usuario, materias_lista = obtener_materias_y_progreso(id_usuario)
+
+    return templates.TemplateResponse(
+        request=request, 
+        name="Materias.html", 
+        context={
+            "id_usuario": id_usuario, 
+            **datos_usuario,
+            "materias": materias_lista
+        }
+    )
+
+
+@router.get("/examenes-estudiante/{id_usuario}", response_class=HTMLResponse)
+def listar_examenes(id_usuario: int, request: Request, materia_id: Optional[int] = Query(None)):
+    """
+    Lista las pruebas o exámenes activos filtrados u ordenados opcionalmente por materia.
+    """
+    examenes_lista = obtener_lista_examenes(materia_id)
+    return templates.TemplateResponse(
+        request=request,
+        name="Examenes.html", 
+        context={"id_usuario": id_usuario, "examenes": examenes_lista}
+    )
+
+
+@router.get("/actividades-estudiante/{id_usuario}", response_class=HTMLResponse)
+def vista_actividades(id_usuario: int, request: Request, materia_filter: Optional[str] = Query("Todas")):
+    """
+    Renderiza la bolsa de reactivos o retos disponibles cruzando el estado completado de cada uno.
+    """
+    datos_user, actividades_lista = obtener_listado_actividades(id_usuario, materia_filter)
+    
+    return templates.TemplateResponse(
+        request=request, 
+        name="Actividades.html", 
+        context={
+            "id_usuario": id_usuario, 
+            **datos_user, 
+            "actividades": actividades_lista, 
+            "filtro_actual": materia_filter
+        }
+    )
+
+
+@router.get("/progreso-estudiante/{id_usuario}", response_class=HTMLResponse)
+def reto_semanal_estudiante(id_usuario: int, request: Request):
+    """
+    Muestra los detalles temporales y objetivos del reto global activo de la semana.
+    """
+    reto_datos = obtener_reto_semanal_activo()
+    return templates.TemplateResponse(
+        request=request, 
+        name="Reto_semanal.html", 
+        context={"id_usuario": id_usuario, "reto": reto_datos}
+    )
+
+
+@router.get("/recompensas-estudiante/{id_usuario}", response_class=HTMLResponse)
+def vista_recompensas(id_usuario: int, request: Request):
+    """
+    Despliega los logros e insignias ganadas/bloqueadas del perfil estudiantil.
+    """
+    datos_user, logros_lista = obtener_logros_estudiante(id_usuario)
+    return templates.TemplateResponse(
+        request=request, 
+        name="Recompensas.html", 
+        context={"id_usuario": id_usuario, **datos_user, "logros": logros_lista}
+    )
+
+
+@router.get("/perfil-estudiante/{id_usuario}", response_class=HTMLResponse)
+def vista_perfil(id_usuario: int, request: Request):
+    """
+    Muestra la vista estática del perfil del alumno.
+    """
+    datos_user = obtener_datos_base_estudiante(id_usuario)
+    return templates.TemplateResponse(
+        request=request, 
+        name="Perfil.html", 
+        context={"id_usuario": id_usuario, **datos_user}
+    )
+
+
+@router.get("/ajustes-estudiante/{id_usuario}", response_class=HTMLResponse)
+def vista_ajustes(id_usuario: int, request: Request):
+    """
+    Formulario de edición para actualizar las credenciales básicas del usuario.
+    """
+    datos_user = obtener_datos_base_estudiante(id_usuario)
+    return templates.TemplateResponse(
+        request=request, 
+        name="Ajustes.html", 
+        context={"id_usuario": id_usuario, **datos_user}
+    )
+
+
+@router.post("/ajustes-estudiante/{id_usuario}/guardar")
+def actualizar_perfil_estudiante(
+    id_usuario: int, 
+    nombre: str = Form(...), 
+    correo: str = Form(...), 
+    contrasena: str = Form(...)
+):
+    """
+    Procesa el envío del formulario tradicional web para modificar datos del alumno.
+    """
+    actualizar_perfil_db(id_usuario, nombre, correo, contrasena)
+    return responses.RedirectResponse(url=f"/perfil-estudiante/{id_usuario}", status_code=303)
+
+
+# --- Rutas API Puras (Retorno JSON) ---
 
 @router.put("/api/estudiantes/{id_usuario}", status_code=status.HTTP_200_OK)
 def actualizar_perfil_estudiante_api(id_usuario: int, datos: EstudianteActualizar):
-    conn = obtener_conexion()
-    if not conn: raise HTTPException(status_code=500, detail="No hay conexión")
+    """
+    Punto de acceso API REST con validación Pydantic estricta para actualizar perfiles.
+    """
+    filas_afectadas = actualizar_perfil_db(id_usuario, datos.nombre, datos.correo, datos.contrasena)
+    if filas_afectadas == 0:
+        raise HTTPException(status_code=404, detail="Estudiante no encontrado.")
+        
+    return {"status": "success", "message": "¡Tus datos de perfil han sido modificados con éxito!"}
+
+
+@router.post("/api/iniciar-examen/{id_usuario}/{id_examen}")
+def iniciar_examen(id_usuario: int, id_examen: int):
+    """
+    Crea e inicializa transaccionalmente una instancia o intento de evaluación.
+    """
     try:
-        with conn.cursor() as cursor:
-            cursor.execute("UPDATE usuarios SET nombre = %s, correo = %s, contraseña = %s WHERE id_usuario = %s AND rol = 'estudiante';", (datos.nombre, datos.correo, datos.contrasena, id_usuario))
-            if cursor.rowcount == 0: raise HTTPException(status_code=404, detail="Estudiante no encontrado.")
-            conn.commit()
-            return {"status": "success", "message": "¡Tus datos de perfil han sido modificados con éxito!"}
+        id_intento = insertar_intento_examen(id_usuario, id_examen)
+        return {"status": "success", "id_intento": id_intento}
     except Exception as e:
-        if conn: conn.rollback()
         raise HTTPException(status_code=400, detail=str(e))
-    finally: conn.close()
+
+
+@router.delete("/api/usuarios/{id_usuario}", status_code=status.HTTP_200_OK)
+def dar_de_baja_usuario(id_usuario: int):
+    """
+    Elimina físicamente y de forma permanente todos los registros del usuario indicado.
+    """
+    try:
+        eliminar_estudiante_permanente(id_usuario)
+        return {"status": "success", "message": "Borrado permanentemente."}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
