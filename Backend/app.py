@@ -1,4 +1,11 @@
 import os
+import sys
+
+# Forzamos a Python 3.14 a registrar el directorio raíz de la aplicación de forma absoluta
+RAIZ_PROYECTO = os.path.dirname(os.path.abspath(__file__))
+if RAIZ_PROYECTO not in sys.path:
+    sys.path.insert(0, RAIZ_PROYECTO)
+    
 from typing import Optional
 from fastapi import FastAPI, Request, HTTPException, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
