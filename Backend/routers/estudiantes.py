@@ -8,7 +8,7 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, field_validator
 
 # Importaciones semánticas desde la capa del Modelo
-from ..models.estudiantes import (
+from models.estudiantes import (
     obtener_datos_base_estudiante,
     registrar_sesion_db,
     obtener_preguntas_landing_db,
