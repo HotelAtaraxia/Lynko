@@ -14,7 +14,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 
 # Importación de funciones controladoras desde la capa de Modelos (Auth)
-from models.auth import verificar_credenciales_login, registrar_nuevo_estudiante
+from models.estudiantes import obtener_perfil_estudiante, obtener_logros_estudiante
 
 # Importamos los routers del ecosistema
 from routers import estudiantes
