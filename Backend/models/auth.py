@@ -1,6 +1,4 @@
 import re
-# Importamos directamente. Al ejecutar uvicorn desde 'Backend', 
-# la raíz ya está en el entorno de búsqueda de Python.
 from database import obtener_conexion
 
 def verificar_credenciales_login(correo: str, contrasena: str):
