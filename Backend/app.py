@@ -5,7 +5,9 @@ import sys
 RAIZ_PROYECTO = os.path.dirname(os.path.abspath(__file__))
 if RAIZ_PROYECTO not in sys.path:
     sys.path.insert(0, RAIZ_PROYECTO)
-    
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from typing import Optional
 from fastapi import FastAPI, Request, HTTPException, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
