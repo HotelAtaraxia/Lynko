@@ -21,13 +21,16 @@ El proyecto sigue un patrón de diseño **Router-Model-Database** para separar l
 
 Para el funcionamiento del entorno, el proyecto utiliza:
 
-| Dependencia | Propósito |
+| Librería | Propósito en el Proyecto |
 | :--- | :--- |
-| `fastapi` | Framework principal para la construcción de la API. |
-| `uvicorn` | Servidor ASGI para ejecutar la aplicación. |
-| `psycopg2-binary` | Driver para la conexión con PostgreSQL. |
-| `jinja2` | Motor de plantillas para el renderizado de HTML. |
-| `anyio` | Gestor de concurrencia y tareas asíncronas. |
+| **`fastapi`** | Framework principal para la creación de endpoints y arquitectura REST. |
+| **`uvicorn`** | Servidor ASGI de alta velocidad para ejecutar la aplicación. |
+| **`pydantic`** | Validación automática de tipos de datos y esquemas de entrada/salida. |
+| **`pydantic-settings`** | Gestión centralizada de configuraciones y variables de entorno. |
+| **`psycopg2-binary`** | Conector nativo para interactuar con bases de datos PostgreSQL. |
+| **`jinja2`** | Motor de renderizado para inyectar datos del backend en plantillas HTML. |
+| **`python-multipart`** | Procesamiento de formularios y subida de archivos desde el frontend. |
+
 
 ---
 
