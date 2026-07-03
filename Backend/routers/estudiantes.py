@@ -58,11 +58,23 @@ class EstudianteActualizar(BaseModel):
 
 
 # --- Funciones Internas de Soporte / Wrappers ---
-def registrar_sesion(id_usuario: int, token: str):
-    """
-    Registra el inicio de sesión llamando al controlador de base de datos.
-    """
-    registrar_sesion_db(id_usuario, token)
+def registrar_sesion_db(id_usuario: int, token: str = None):
+    conn = obtener_conexion()
+    if conn:
+        try:
+            with conn.cursor() as cursor:
+                
+                cursor.execute("""
+                    INSERT INTO sesiones (id_usuario, fecha_creacion) 
+                    VALUES (%s, NOW());
+                """, (id_usuario,))
+                conn.commit()
+                return True
+        except Exception as e:
+            print(f"⚠️ Error al registrar sesión: {e}")
+        finally:
+            conn.close()
+    return False
 
 
 # --- API Pública de la Landing Page ---
