@@ -1,38 +1,79 @@
-# 🐾 Lynko Backend
+# 🚀 Lynko Backend
 
-Este es el núcleo lógico de la plataforma educativa **Lynko**. Se encarga de gestionar la API, la lógica de negocio, las validaciones de usuario y la comunicación con la base de datos.
-
-##  Arquitectura del Backend
-
-El backend sigue una estructura modular para facilitar el mantenimiento y la escalabilidad:
-
-*   **`main.py`**: Punto de entrada de la aplicación FastAPI.
-*   **`app.py`**: Configuración de la aplicación y montaje del router principal.
-*   **`database.py`**: Gestión centralizada de la conexión con la base de datos PostgreSQL.
-*   **`routers/`**: Contiene los endpoints divididos por funcionalidad (estudiantes, materias, autenticación, etc.).
-*   **`admin.py`**: Lógica de control para la gestión administrativa del sistema.
+El motor de backend para la plataforma educativa **Lynko**, desarrollado con **FastAPI**. Este sistema gestiona el progreso, retos, logros y actividades de los estudiantes con una arquitectura modular y eficiente.
 
 ---
 
-##  Requisitos Técnicos (`requirements.txt`)
+## 🏗 Arquitectura del Proyecto
 
-Para ejecutar este backend, asegúrate de tener instaladas las siguientes dependencias:
+El proyecto sigue un patrón de diseño **Router-Model-Database** para separar la lógica de negocio de la gestión de rutas:
 
-*   `fastapi==0.111.0`: Motor de la API y manejo de rutas.
-*   `uvicorn==0.30.1`: Servidor ASGI para ejecutar la aplicación.
-*   `jinja2==3.1.4`: Renderizado de plantillas HTML para el frontend.
-*   `pydantic==2.7.2`: Validación de esquemas de datos.
-*   `pydantic-settings==2.3.0`: Gestión de configuraciones.
-*   `psycopg2-binary==2.9.9`: Driver para la conexión con PostgreSQL.
-*   `python-multipart==0.0.9`: Procesamiento de formularios web.
+- **`app.py`**: Punto de entrada principal. Configura la aplicación FastAPI, middlewares de rastreo y rutas base.
+- **`routers/`**: Capa de presentación. Recibe peticiones HTTP, valida parámetros y prepara el contexto para las plantillas.
+- **`models/`**: Capa de lógica de negocio. Contiene funciones que interactúan con la base de datos, realizan cálculos (niveles, rachas) y procesan datos.
+- **`config/`**: Gestión de infraestructura. Contiene la lógica para la conexión segura a PostgreSQL.
+
+
 
 ---
 
-##  Ejecución
+## 🛠 Tecnologías y Dependencias
 
-Para iniciar el servidor de desarrollo, sigue estos pasos desde la carpeta `/Backend`:
+Para el funcionamiento del entorno, el proyecto utiliza:
 
-1. **Activa tu entorno virtual**:
-   ```bash
-   # Windows
-   venv\Scripts\activate
+| Dependencia | Propósito |
+| :--- | :--- |
+| `fastapi` | Framework principal para la construcción de la API. |
+| `uvicorn` | Servidor ASGI para ejecutar la aplicación. |
+| `psycopg2-binary` | Driver para la conexión con PostgreSQL. |
+| `jinja2` | Motor de plantillas para el renderizado de HTML. |
+| `anyio` | Gestor de concurrencia y tareas asíncronas. |
+
+---
+
+## 📂 Estructura de Directorios
+
+```text
+Backend/
+├── app.py              # Configuración global y Middleware
+├── config/
+│   └── database.py     # Lógica de conexión a PostgreSQL
+├── models/
+│   ├── estudiantes.py  # Funciones SQL para perfiles, logros y retos
+│   └── (otros modelos) # Módulos especializados de lógica
+├── routers/
+│   └── estudiantes.py  # Endpoints de la interfaz del estudiante
+└── templates/          # Archivos HTML y assets de UI
+## ⚙️ Configuración y Despliegue
+1. Instalación
+Asegúrate de tener Python 3.14+ instalado y ejecuta:
+
+'''Bash
+pip install fastapi uvicorn psycopg2-binary jinja2
+'''
+2. Ejecución
+Para iniciar el servidor en modo de desarrollo con recarga automática:
+
+'''Bash
+uvicorn app:app --reload
+---
+'''
+##🧩 Funcionalidades Clave
+Gestión de Datos
+La lógica de base de datos está centralizada en los modelos, utilizando el patrón with...as para garantizar que las conexiones se cierren automáticamente, optimizando así el rendimiento.
+
+## Gamificación
+El backend incluye lógica integrada para:
+
+Cálculo de niveles: Basado en puntaje_total.
+
+Logros: Sistema de filtrado alcanzados/pendientes.
+
+Retos semanales: Exclusión de exámenes ya aprobados usando NOT IN en consultas SQL.
+
+###🔒 Consideraciones de Seguridad
+SQL Injection: Todas las consultas utilizan parámetros tipados (%s) para evitar vulnerabilidades de inyección.
+
+Sesiones: Implementación de un sistema de tokens para validar el acceso de los usuarios.
+
+Manejo de Errores: Middleware centralizado para el rastreo y registro de errores críticos 500.
