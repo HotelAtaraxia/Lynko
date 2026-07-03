@@ -44,20 +44,21 @@ Backend/
 ├── routers/
 │   └── estudiantes.py  # Endpoints de la interfaz del estudiante
 └── templates/          # Archivos HTML y assets de UI
+```
 ## ⚙️ Configuración y Despliegue
 1. Instalación
 Asegúrate de tener Python 3.14+ instalado y ejecuta:
 
-'''Bash
+```Bash
 pip install fastapi uvicorn psycopg2-binary jinja2
-'''
+```
 2. Ejecución
 Para iniciar el servidor en modo de desarrollo con recarga automática:
 
-'''Bash
+```Bash
 uvicorn app:app --reload
+```
 ---
-'''
 ##🧩 Funcionalidades Clave
 Gestión de Datos
 La lógica de base de datos está centralizada en los modelos, utilizando el patrón with...as para garantizar que las conexiones se cierren automáticamente, optimizando así el rendimiento.
