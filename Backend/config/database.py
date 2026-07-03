@@ -13,4 +13,4 @@ def obtener_conexion():
     except Exception as e:
         print(f"❌ Error crítico al conectar con PostgreSQL: {e}")
         return None
-    #Esa IA es el diablo
+    

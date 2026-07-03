@@ -1,6 +1,7 @@
 from config.database import obtener_conexion
 from datetime import datetime
 
+
 def obtener_datos_base_estudiante(cursor, id_usuario: int):
     cursor.execute("""
         SELECT nombre, COALESCE(puntaje_total, 0), correo, contraseña, COALESCE(nivel, 0), COALESCE(dias_racha, 0)
@@ -83,39 +84,61 @@ def consultar_preguntas_landing():
     return preguntas_data
 
 def consultar_dashboard_estudiante(id_usuario: int):
+    # Aquí va la conexión a tu base de datos y la consulta SQL 
+    # que extrae nombre, puntos, nivel y progreso
     conn = obtener_conexion()
-    datos = {"nombre": "Estudiante", "puntaje_total": 0, "nivel": 0, "dias_racha": 0}
-    progreso_estudiante = {"Matemáticas": 0, "Español": 0, "Biología": 0}
-    imagenes_materias = {"Matemáticas": None, "Español": None, "Biología": None}
-    
-    if conn:
-        try:
-            with conn.cursor() as cursor:
-                cursor.execute("SELECT nombre, link_imagen FROM materias;")
-                for row in cursor.fetchall():
-                    if row[0] in imagenes_materias:
-                        imagenes_materias[row[0]] = row[1]
-
-                cursor.execute("SELECT nombre, puntaje_total, nivel, dias_racha FROM usuarios WHERE id_usuario = %s AND activo = true", (id_usuario,))
-                usuario_db = cursor.fetchone()
-                if usuario_db:
-                    datos = {"nombre": usuario_db[0], "puntaje_total": usuario_db[1], "nivel": usuario_db[2], "dias_racha": usuario_db[3]}
-
-                query_progreso = """
-                    SELECT m.nombre AS materia, COUNT(p.id_pregunta) AS total_preguntas,
-                        COUNT(ru.id_intento_respuesta) FILTER (WHERE ru.es_correcta = true) AS correctas
-                    FROM materias m
-                    LEFT JOIN preguntas p ON m.id_materia = p.id_materia
-                    LEFT JOIN respuestas_usuario ru ON p.id_pregunta = ru.id_pregunta AND ru.id_usuario = %s
-                    GROUP BY m.id_materia, m.nombre
-                """
-                cursor.execute(query_progreso, (id_usuario,))
-                for fila in cursor.fetchall():
-                    total, correctas = fila[1], fila[2]
-                    progreso_estudiante[fila[0]] = min(int((correctas / total) * 100), 100) if total > 0 else 0
-        finally:
-            conn.close()
-    return datos, progreso_estudiante, imagenes_materias
+    try:
+        with conn.cursor() as cursor:
+            # Consulta SQL real para traer nombre, puntos, nivel, etc.
+            cursor.execute("SELECT nombre, puntaje_total, nivel, dias_racha FROM usuarios WHERE id_usuario = %s", (id_usuario,))
+            usuario_db = cursor.fetchone()
+            
+            # Formatear los datos correctamente
+            datos = {"nombre": usuario_db[0], "puntaje_total": usuario_db[1], "nivel": usuario_db[2], "dias_racha": usuario_db[3]}
+            # ... lógica para el progreso de materias ...
+            progreso_estudiante = {...}
+            imagenes_materias = {...}
+            
+            return datos, progreso_estudiante, imagenes_materias
+    finally:
+        conn.close()
  
-def registrar_sesion_db(id_usuario: int): 
-    return True 
+# --- FUNCIONES BASE Y DE CONTROL ---
+def obtener_datos_base_estudiante(id_usuario: int):
+    return {"id": id_usuario, "nombre": "Estudiante"}
+
+def registrar_sesion_db(id_usuario: int):
+    return True
+
+def obtener_preguntas_landing_db():
+    return []
+
+# --- DASHBOARD Y PROGRESO ---
+def obtener_progreso_dashboard(id_usuario: int):
+    return {"progreso": 0}
+
+def obtener_materias_y_progreso(id_usuario: int):
+    return []
+
+# --- EXÁMENES Y ACTIVIDADES ---
+def obtener_lista_examenes(id_usuario: int):
+    return []
+
+def insertar_intento_examen(id_usuario: int, id_examen: int, respuestas: dict):
+    return {"status": "success"}
+
+def obtener_listado_actividades(id_usuario: int):
+    return []
+
+# --- RETOS, LOGROS Y CONFIGURACIÓN ---
+def obtener_reto_semanal_activo():
+    return {"id": 1, "titulo": "Reto Lince"}
+
+def obtener_logros_estudiante(id_usuario: int):
+    return []
+
+def actualizar_perfil_db(id_usuario: int, datos: dict):
+    return True
+
+def eliminar_estudiante_permanente(id_usuario: int):
+    return True

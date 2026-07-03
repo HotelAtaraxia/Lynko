@@ -1,4 +1,6 @@
-
+/* ==========================================================================
+   1. ESTILOS BASE Y GENERALES (RESET & TIPOGRAFÍA)
+   ========================================================================== */
 body {
     font-family: 'Nunito', sans-serif;
     margin: 0;
@@ -6,6 +8,14 @@ body {
     background-color: #FFFBF7; 
     color: #2D3748;
     box-sizing: border-box;
+}
+
+p {
+    font-family: 'Varela Round', cursive;
+    font-size: 20px; 
+    font-weight: 600;
+    color: #4A5568;
+    margin-top: 0;
 }
 
 header {
@@ -26,19 +36,23 @@ h1, h2, h3, h4 {
     font-weight: 900;
 }
 
-
+/* ==========================================================================
+   2. ESTRUCTURA Y DISEÑO DE LA LANDING (HERO, SECCIONES Y GRID)
+   ========================================================================== */
 #main-header {
     display: flex;
+    flex-direction: row;            
     justify-content: space-between;
     align-items: center;
-    padding: 15px 50px; 
-    position: sticky;   
+    padding: 15px 50px;
+    position: sticky;
     top: 0;
     z-index: 100;
 }
 
 #hero-section {
-    display: flex;      
+    display: flex;
+    flex-direction: row;            
     align-items: center;
     justify-content: space-between;
     padding: 60px 50px;
@@ -48,26 +62,37 @@ h1, h2, h3, h4 {
 #features-section {
     padding: 50px 20px;
     background-color: #FFFFFF;
-    margin: 30px 50px;  
+    margin: 30px 50px;
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(255, 122, 0, 0.05); 
 }
 
+/* Contenedor del contenido textual del Hero organizado verticalmente */
+.hero-contenido {
+    width: 45%;
+    display: flex;
+    flex-direction: column;         
+    justify-content: center;
+}
+
 .logo-container {
     display: flex;
+    flex-direction: row;            
     align-items: center;
     gap: 10px;
 }
 
 .nav-links {
     display: flex;
+    flex-direction: row;            
     gap: 15px;
 }
 
 .features-grid {
-    display: flex;      
+    display: flex;
+    flex-direction: row;            
     justify-content: space-around;
-    flex-wrap: wrap;    
+    flex-wrap: wrap;
     gap: 25px;
     margin-top: 30px;
 }
@@ -75,15 +100,11 @@ h1, h2, h3, h4 {
 .hero-imagen-div {
     width: 45%;
     height: 400px;
-    background-image: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600'); 
+    background-image: url('https://cdn.phototourl.com/free/2026-06-26-09afa2a9-9e63-48c2-903d-d27facaf7c0a.jpg');
     background-size: cover;
     background-position: center;
     border-radius: 24px;
     border: 4px solid #FF7A00; 
-}
-
-.hero-contenido {
-    width: 45%;
 }
 
 .hero-titulo {
@@ -115,7 +136,9 @@ h1, h2, h3, h4 {
     font-size: 32px;
 }
 
-/*  TARJETAS DE MATERIAS */
+/* ==========================================================================
+   3. TARJETAS DE MATERIAS (FEATURES CARDS)
+   ========================================================================== */
 .feature-card {
     flex: 1;
     min-width: 250px;
@@ -126,35 +149,75 @@ h1, h2, h3, h4 {
     border: 2px solid #FEEBC8;
     text-align: center;
     transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;         
+    align-items: center;
 }
 
 .feature-card:hover {
     transform: translateY(-5px); 
 }
 
+
 .card-icon {
-    font-size: 40px;
-    width: 70px;
-    height: 70px;
+    width: 120px;               
+    height: 120px;              
     display: flex;
+    flex-direction: row;       
     align-items: center;
     justify-content: center;
     margin: 0 auto 20px auto;
-    border-radius: 50px;
+    border-radius: 24px;        
+    box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.06); 
+    transition: transform 0.3s ease;
 }
 
-.math-bg { background-color: #EBF8FF; }
-.bio-bg { background-color: #E6FFFA; }
-.esp-bg { background-color: #FEFCBF; }
 
-/* BOTONES GENERALES */
-.btn-primary, .btn-cta {
-    background-color: #FF7A00;
+.card-icon img, .card-icon span {
+    max-width: 85%;
+    max-height: 85%;
+    object-fit: contain;
+    font-size: 65px;            
+}
+
+
+.feature-card:hover .card-icon {
+    transform: scale(1.08) rotate(3deg); 
+}
+
+
+.math-bg { 
+    background-color: #EBF8FF; 
+    border: 3px solid #BEE3F8;
+}
+
+.bio-bg { 
+    background-color: #E6FFFA; 
+    border: 3px solid #B2F5EA;
+}
+
+.esp-bg { 
+    background-color: #FEFCBF; 
+    border: 3px solid #FAF089;
+}
+
+/* ==========================================================================
+   4. COMPONENTES DE BOTONES GENERALES
+   ========================================================================== */
+.btn-primary, .btn-cta, .btn-secondary {
     color: #FFFFFF;
     padding: 10px 22px;
     border-radius: 12px;
     text-decoration: none;
     font-weight: 700;
+    display: inline-flex;     
+    flex-direction: row;            
+    align-items: center;     
+    justify-content: center;  
+}
+
+.btn-primary, .btn-cta {
+    background-color: #FF7A00;
     border: 2px solid #FF7A00;
 }
 
@@ -166,10 +229,6 @@ h1, h2, h3, h4 {
 
 .btn-secondary {
     color: #FF7A00;
-    padding: 10px 22px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 700;
     border: 2px solid #FEEBC8;
 }
 
@@ -177,9 +236,9 @@ h1, h2, h3, h4 {
     background-color: #E66E00;
 }
 
-/*  DESAFÍO */
-
-/* Encabezado de la zona interactiva */
+/* ==========================================================================
+   🎮 5. MÓDULO: DESAFÍO RÁPIDO (ESTILO CUTE Y GAMIFICADO)
+   ========================================================================== */
 #preview-header {
     text-align: center;
     margin-bottom: 25px;
@@ -204,9 +263,9 @@ h1, h2, h3, h4 {
     font-family: 'Nunito', sans-serif;
 }
 
-/* Flechas + Tarjeta */
 .quiz-container {
     display: flex;
+    flex-direction: row;            
     align-items: center;
     justify-content: center;
     gap: 20px;
@@ -215,7 +274,6 @@ h1, h2, h3, h4 {
     padding: 10px;
 }
 
-/*Flechas circulares */
 .quiz-nav-btn {
     background: #FFFFFF;
     border: 3px solid #FFE0CC;
@@ -226,6 +284,7 @@ h1, h2, h3, h4 {
     border-radius: 50%;
     cursor: pointer;
     display: flex;
+    flex-direction: row;            
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 0 #FFE0CC;
@@ -243,7 +302,6 @@ h1, h2, h3, h4 {
     box-shadow: 0 0px 0 #FFE0CC;
 }
 
-/* Tarjeta  Desafío */
 .quiz-card {
     flex: 1;
     background: #FFFFFF;
@@ -251,11 +309,13 @@ h1, h2, h3, h4 {
     border-radius: 28px;
     padding: 30px;
     box-shadow: 0 10px 25px rgba(255, 122, 0, 0.05);
+    display: flex;
+    flex-direction: column;         
 }
 
-/*Materias y Puntos */
 .quiz-meta {
     display: flex;
+    flex-direction: row;            
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
@@ -280,9 +340,9 @@ h1, h2, h3, h4 {
     border-radius: 50px;
 }
 
-/* interna  enunciado */
 .quiz-body-wrapper {
     display: flex;
+    flex-direction: row-reverse;    
     align-items: center;
     justify-content: space-between;
     gap: 20px;
@@ -302,7 +362,6 @@ h1, h2, h3, h4 {
     flex: 1;
 }
 
-/*Decoración de materia */
 .quiz-avatar-decor {
     width: 80px;
     height: 80px;
@@ -310,58 +369,62 @@ h1, h2, h3, h4 {
     border: 3px solid #FFBE98;
     border-radius: 50%;
     display: flex;
+    flex-direction: row;            
     align-items: center;
     justify-content: center;
     font-size: 38px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.02);
 }
 
-/*  Opciones de Respuesta  */
 .quiz-options-grid {
     display: flex;
+    flex-direction: row;            
     justify-content: center;
     flex-wrap: wrap;    
     gap: 16px;           
     margin-top: 20px;
 }
 
-.preview-opt-btn {
+.preview-opt-btn, .quiz-options-grid button {
     background: #FFFFFF; 
-    border: 3px solid #FFE0CC;       
-    padding: 16px 28px;              
     border-radius: 18px;             
-    font-family: 'Nunito', sans-serif; 
     font-weight: 800; 
-    font-size: 18px;                 
-    color: #FF7A00;                  
     cursor: pointer; 
-    box-shadow: 0 5px 0 #FFE0CC;    
     transition: all 0.1s ease;
     display: inline-flex;
+    flex-direction: row;            
     align-items: center;
     justify-content: center;
-    min-width: 100px;               
+}
+
+.preview-opt-btn {
+    border: 3px solid #FFE0CC;       
+    padding: 16px 28px;              
+    font-family: 'Nunito', sans-serif; 
+    font-size: 18px;                 
+    color: #FF7A00;                  
+    box-shadow: 0 5px 0 #FFE0CC;     
+    min-width: 100px;                
 }
 
 .preview-opt-btn:hover:not(:disabled) {
-    background: #FFF9F5;            
+    background: #FFF9F5;             
     border-color: #FFB300;           
-    color: #E66E00;                 
-    transform: translateY(-2px);    
+    color: #E66E00;                  
+    transform: translateY(-2px);     
     box-shadow: 0 7px 0 #FFB300;     
 }
 
 .preview-opt-btn:active:not(:disabled) {
     transform: translateY(4px);      
-    box-shadow: 0 1px 0 #FFB300;    
+    box-shadow: 0 1px 0 #FFB300;     
+}
 
 .preview-opt-btn:disabled {
     cursor: not-allowed;
 }
 
-/* botones generados por JS */
-.quiz-options-grid button{
-    background: #FFFFFF;
+.quiz-options-grid button {
     border: 3px solid #E2E8F0;
     padding: 16px;
     border-radius: 20px;
@@ -369,12 +432,10 @@ h1, h2, h3, h4 {
     font-weight: 900;
     font-size: 16px;
     color: #4A5568;
-    cursor: pointer;
     box-shadow: 0 4px 0 #E2E8F0;
-    transition: all 0.1s ease;
 }
 
-.quiz-options-grid button:hover(:disabled) {
+.quiz-options-grid button:hover:not(:disabled) {
     background-color: #FFFDF0;
     border-color: #FFB300;
     color: #FF6F00;
@@ -382,12 +443,11 @@ h1, h2, h3, h4 {
     box-shadow: 0 6px 0 #FFB300;
 }
 
-.quiz-options-grid button:active (:disabled) {
+.quiz-options-grid button:active:not(:disabled) {
     transform: translateY(4px);
     box-shadow: 0 0px 0 #FFB300;
 }
 
-/* Caja de Feedback dinámico */
 .quiz-feedback-box {
     margin-top: 20px;
     border-radius: 15px;
@@ -398,7 +458,7 @@ h1, h2, h3, h4 {
     transition: all 0.3s ease;
 }
 
-/* ANIMACIONES  */
+
 @keyframes pulseCute {
     0% { transform: scale(1); }
     100% { transform: scale(1.08); }

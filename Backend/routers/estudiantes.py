@@ -1,11 +1,13 @@
 import os
 import re
 from datetime import datetime
+from fastapi import Query
 from typing import Optional
 from fastapi import APIRouter, Request, Form, HTTPException, Query, status, responses
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, field_validator
+from config.database import obtener_conexion
 
 # Importaciones semánticas desde la capa del Modelo
 from models.estudiantes import (
@@ -13,6 +15,7 @@ from models.estudiantes import (
     registrar_sesion_db,
     obtener_preguntas_landing_db,
     obtener_progreso_dashboard,
+    consultar_dashboard_estudiante,
     obtener_materias_y_progreso,
     obtener_lista_examenes,
     insertar_intento_examen,
@@ -25,7 +28,7 @@ from models.estudiantes import (
 
 # Configuración del directorio base subiendo un nivel desde /routers
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-templates = Jinja2Templates(directory=BASE_DIR)
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "..", "Frontend", "templates"))
 
 # Inicializamos el router independiente
 router = APIRouter()
@@ -65,13 +68,53 @@ def registrar_sesion(id_usuario: int, token: str):
 # --- API Pública de la Landing Page ---
 @router.get("/api/preguntas-landing")
 def obtener_preguntas_landing():
-    """
-    Retorna preguntas aleatorias multi-materia para la landing pública o un fallback en JSON.
-    """
-    preguntas_data = obtener_preguntas_landing_db()
+    conn = obtener_conexion()
+    preguntas_data = []
     
+    if conn:
+        try:
+            # Usamos dos cursores distintos para evitar conflictos de lectura
+            with conn.cursor() as cursor_preguntas:
+                # 1. Buscamos las preguntas
+                query = """
+                    SELECT DISTINCT ON (p.id_materia) 
+                        p.id_pregunta, m.nombre AS materia, p.pregunta, p.puntos_recompensa
+                    FROM preguntas p
+                    JOIN materias m ON p.id_materia = m.id_materia
+                    ORDER BY p.id_materia, RANDOM();
+                """
+                cursor_preguntas.execute(query)
+                filas = cursor_preguntas.fetchall()
+                
+                # 2. Abrimos el segundo cursor dentro del bloque para las opciones
+                with conn.cursor() as cursor_opciones:
+                    for fila in filas:
+                        id_preg = fila[0]
+                        
+                        cursor_opciones.execute("""
+                            SELECT opcion, es_correcta
+                            FROM opciones
+                            WHERE id_pregunta = %s
+                            ORDER BY RANDOM();
+                        """, (id_preg,))
+                        
+                        filas_opciones = cursor_opciones.fetchall()
+                        opciones = [{"opcion": o[0], "es_correcta": bool(o[1])} for o in filas_opciones]
+                        
+                        preguntas_data.append({
+                            "id_pregunta": id_preg,
+                            "materia": fila[1].upper(),
+                            "pregunta": fila[2],
+                            "puntos": fila[3],
+                            "opciones": opciones
+                        })
+        except Exception as e:
+            print(f"⚠️ Error en la API de la landing: {e}")
+        finally:
+            conn.close()
+            
+    # Respuesta de respaldo si la base de datos no retorna datos
     if not preguntas_data:
-        # Respaldar datos si la base de datos se encuentra vacía inicialmente
         return [
             {
                 "id_pregunta": 0,
@@ -86,145 +129,121 @@ def obtener_preguntas_landing():
                 ]
             }
         ]
+        
     return preguntas_data
 
 
-# --- Rutas de Navegación del Estudiante (Vistas HTML) ---
 
 @router.get("/inicio-estudiante/{id_usuario}", response_class=HTMLResponse)
-def dashboard_estudiante_logeado(id_usuario: int, request: Request, vista_rapida: Optional[bool] = Query(None)):
-    """
-    Despliega la vista inicial del estudiante recopilando datos generales y porcentajes de avance.
-    """
-    # Obtenemos la información agregada y limpia desde el modelo
-    datos_usuario, progreso_estudiante, imagenes_materias = obtener_progreso_dashboard(id_usuario)
-            
-    return templates.TemplateResponse(
-        request=request, 
-        name="inicio_lynko.html",
-        context={
-            "request": request, 
-            "id_usuario": id_usuario, 
-            "vista_rapida": vista_rapida, 
-            "progreso": progreso_estudiante, 
-            "imagenes": imagenes_materias, 
-            **datos_usuario
-        }
-    )
-
-
-@router.get("/materias-estudiante/{id_usuario}", response_class=HTMLResponse)
-def vista_materias(request: Request, id_usuario: int):
-    """
-    Obtiene el listado general de asignaturas y calcula el porcentaje de lecciones completadas.
-    """
-    datos_usuario, materias_lista = obtener_materias_y_progreso(id_usuario)
-
-    return templates.TemplateResponse(
-        request=request, 
-        name="Materias.html", 
-        context={
-            "id_usuario": id_usuario, 
-            **datos_usuario,
-            "materias": materias_lista
-        }
-    )
-
-
-@router.get("/examenes-estudiante/{id_usuario}", response_class=HTMLResponse)
-def listar_examenes(id_usuario: int, request: Request, materia_id: Optional[int] = Query(None)):
-    """
-    Lista las pruebas o exámenes activos filtrados u ordenados opcionalmente por materia.
-    """
-    examenes_lista = obtener_lista_examenes(materia_id)
-    return templates.TemplateResponse(
-        request=request,
-        name="Examenes.html", 
-        context={"id_usuario": id_usuario, "examenes": examenes_lista}
-    )
-
-
-@router.get("/actividades-estudiante/{id_usuario}", response_class=HTMLResponse)
-def vista_actividades(id_usuario: int, request: Request, materia_filter: Optional[str] = Query("Todas")):
-    """
-    Renderiza la bolsa de reactivos o retos disponibles cruzando el estado completado de cada uno.
-    """
-    datos_user, actividades_lista = obtener_listado_actividades(id_usuario, materia_filter)
+def dashboard_estudiante_logeado(id_usuario: int, request: Request):
+    # Usamos la función que SÍ consulta la base de datos completa
+    datos_usuario, progreso, imagenes = consultar_dashboard_estudiante(id_usuario)
     
     return templates.TemplateResponse(
         request=request, 
-        name="Actividades.html", 
+        name="inicio_lynko.html", 
         context={
-            "id_usuario": id_usuario, 
-            **datos_user, 
-            "actividades": actividades_lista, 
-            "filtro_actual": materia_filter
+            "request": request,
+            "id_usuario": id_usuario,
+            "nombre": datos_usuario["nombre"],
+            "puntos": datos_usuario["puntaje_total"],
+            "nivel": datos_usuario["nivel"],
+            "racha": datos_usuario["dias_racha"],
+            "progreso": progreso,
+            "imagenes": imagenes
         }
     )
 
+@router.get("/materias-estudiante/{id_usuario}", response_class=HTMLResponse)
+def vista_materias(request: Request, id_usuario: int):
+    datos_base = obtener_datos_base_estudiante(id_usuario) # Datos para la cabecera
+    resultado = obtener_materias_y_progreso(id_usuario)
+    
+    datos_usuario, materias_lista = resultado if isinstance(resultado, tuple) and len(resultado) == 2 else ({"nombre": "Estudiante"}, [])
+    
+    return templates.TemplateResponse(
+        request=request, name="Materias.html", 
+        context={"request": request, "id_usuario": id_usuario, **datos_base, **datos_usuario, "materias": materias_lista}
+    )
+
+@router.get("/examenes-estudiante/{id_usuario}", response_class=HTMLResponse)
+def listar_examenes(id_usuario: int, request: Request, materia_id: Optional[int] = Query(None)):
+    datos_base = obtener_datos_base_estudiante(id_usuario)
+    examenes_lista = obtener_lista_examenes(id_usuario) or []
+    
+    return templates.TemplateResponse(
+        request=request, name="Examenes.html",
+        context={"request": request, "id_usuario": id_usuario, **datos_base, "examenes": examenes_lista}
+    )
+
+@router.get("/actividades-estudiante/{id_usuario}", response_class=HTMLResponse)
+def vista_actividades(id_usuario: int, request: Request, materia_filter: Optional[str] = Query("Todas")):
+    datos_base = obtener_datos_base_estudiante(id_usuario)
+    resultado = obtener_listado_actividades(id_usuario)
+    
+    datos_user, actividades_lista = resultado if isinstance(resultado, tuple) and len(resultado) == 2 else ({"nombre": "Estudiante"}, [])
+    
+    return templates.TemplateResponse(
+        request=request, name="Actividades.html", 
+        context={"request": request, "id_usuario": id_usuario, **datos_base, **datos_user, "actividades": actividades_lista, "filtro_actual": materia_filter}
+    )
 
 @router.get("/progreso-estudiante/{id_usuario}", response_class=HTMLResponse)
 def reto_semanal_estudiante(id_usuario: int, request: Request):
-    """
-    Muestra los detalles temporales y objetivos del reto global activo de la semana.
-    """
-    reto_datos = obtener_reto_semanal_activo()
+    datos_base = obtener_datos_base_estudiante(id_usuario)
+    reto_datos = obtener_reto_semanal_activo() or {}
+    
     return templates.TemplateResponse(
-        request=request, 
-        name="Reto_semanal.html", 
-        context={"id_usuario": id_usuario, "reto": reto_datos}
+        request=request, name="Reto_semanal.html", 
+        context={"request": request, "id_usuario": id_usuario, **datos_base, "reto": reto_datos}
     )
-
 
 @router.get("/recompensas-estudiante/{id_usuario}", response_class=HTMLResponse)
 def vista_recompensas(id_usuario: int, request: Request):
-    """
-    Despliega los logros e insignias ganadas/bloqueadas del perfil estudiantil.
-    """
-    datos_user, logros_lista = obtener_logros_estudiante(id_usuario)
+    datos_base = obtener_datos_base_estudiante(id_usuario)
+    resultado = obtener_logros_estudiante(id_usuario)
+    
+    datos_user, logros_lista = resultado if isinstance(resultado, tuple) and len(resultado) == 2 else ({"nombre": "Estudiante"}, [])
+        
     return templates.TemplateResponse(
-        request=request, 
-        name="Recompensas.html", 
-        context={"id_usuario": id_usuario, **datos_user, "logros": logros_lista}
+        request=request, name="Recompensas.html", 
+        context={"request": request, "id_usuario": id_usuario, **datos_base, **datos_user, "logros": logros_lista}
     )
-
 
 @router.get("/perfil-estudiante/{id_usuario}", response_class=HTMLResponse)
 def vista_perfil(id_usuario: int, request: Request):
-    """
-    Muestra la vista estática del perfil del alumno.
-    """
-    datos_user = obtener_datos_base_estudiante(id_usuario)
+    # Obtenemos los datos base (incluye nombre, puntos, nivel, etc.)
+    datos_user = obtener_datos_base_estudiante(id_usuario) or {"nombre": "Estudiante", "correo": ""}
+    print(f"DEBUG: Datos enviados al HTML: {datos_user}")
+    
     return templates.TemplateResponse(
         request=request, 
         name="Perfil.html", 
-        context={"id_usuario": id_usuario, **datos_user}
+        context={
+            "request": request, 
+            "id_usuario": id_usuario, 
+            **datos_user
+        }
     )
-
 
 @router.get("/ajustes-estudiante/{id_usuario}", response_class=HTMLResponse)
 def vista_ajustes(id_usuario: int, request: Request):
-    """
-    Formulario de edición para actualizar las credenciales básicas del usuario.
-    """
-    datos_user = obtener_datos_base_estudiante(id_usuario)
+    
+    datos_user = obtener_datos_base_estudiante(id_usuario) or {"nombre": "Estudiante", "correo": ""}
+    
     return templates.TemplateResponse(
         request=request, 
         name="Ajustes.html", 
-        context={"id_usuario": id_usuario, **datos_user}
+        context={
+            "request": request, 
+            "id_usuario": id_usuario, 
+            **datos_user  # Desempaqueta nombre, puntos, nivel, etc.[cite: 1]
+        }
     )
-
+    
 
 @router.post("/ajustes-estudiante/{id_usuario}/guardar")
-def actualizar_perfil_estudiante(
-    id_usuario: int, 
-    nombre: str = Form(...), 
-    correo: str = Form(...), 
-    contrasena: str = Form(...)
-):
-    """
-    Procesa el envío del formulario tradicional web para modificar datos del alumno.
-    """
+def actualizar_perfil_estudiante(id_usuario: int, nombre: str = Form(...), correo: str = Form(...), contrasena: str = Form(...)):
     actualizar_perfil_db(id_usuario, nombre, correo, contrasena)
     return responses.RedirectResponse(url=f"/perfil-estudiante/{id_usuario}", status_code=303)
 

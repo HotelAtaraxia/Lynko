@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from database import obtener_conexion
+from config.database import obtener_conexion
 from typing import Optional
 
 router = APIRouter(prefix="/admin")
@@ -266,7 +266,6 @@ def ver_ranking(request: Request):
     if conn:
         try:
             with conn.cursor() as cursor:
-                # CORREGIDO: Se quitó 'AND activo = TRUE' ya que la columna no existe en tu script.sql
                 cursor.execute("""
                     SELECT nombre, nivel, puntaje_total 
                     FROM usuarios 

@@ -348,9 +348,9 @@
             font-size: 45px;
         }
 
-        .math-bg { background-color: #FFC966; }
-        .spanish-bg { background-color: #8DE08D; }
-        .bio-bg { background-color: #B39DDB; }
+        .math-bg { background-color: #FFC966; background-image: url(https://cdn.phototourl.com/member/2026-06-27-583233bf-4a1d-4970-990f-1d0085dc7d33.png);}
+        .spanish-bg { background-color: #8DE08D; background-image: url(https://cdn.phototourl.com/member/2026-06-27-baf14226-a107-4183-9e83-22916f014a7b.png); }
+        .bio-bg { background-color: #B39DDB; background-image: url(https://cdn.phototourl.com/member/2026-06-27-ae6b3f9e-ca67-4c63-8399-8b0d12920421.png); }
 
         .subject-info {
             padding: 20px;
