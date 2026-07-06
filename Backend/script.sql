@@ -1,33 +1,18 @@
---
--- PostgreSQL database dump
---
+DROP TABLE IF EXISTS logros_usuario CASCADE;
+DROP TABLE IF EXISTS logros CASCADE;
+DROP TABLE IF EXISTS historial_puntos CASCADE;
+DROP TABLE IF EXISTS respuestas_usuario CASCADE;
+DROP TABLE IF EXISTS intentos_examen CASCADE;
+DROP TABLE IF EXISTS preguntas_examen CASCADE;
+DROP TABLE IF EXISTS opciones CASCADE;
+DROP TABLE IF EXISTS preguntas CASCADE;
+DROP TABLE IF EXISTS examenes CASCADE;
+DROP TABLE IF EXISTS materias CASCADE;
+DROP TABLE IF EXISTS progreso CASCADE;
+DROP TABLE IF EXISTS sesiones CASCADE;
+DROP TABLE IF EXISTS usuarios CASCADE;
 
--- Dumped from database version 12.4
--- Dumped by pg_dump version 12.4
-
--- Started on 2026-06-20 10:37:06
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
-SET default_tablespace = '';
-
-SET default_table_access_method = heap;
-
---
--- TOC entry 215 (class 1259 OID 24747)
--- Name: examenes; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.examenes (
+CREATE TABLE examenes (
     id_examen integer NOT NULL,
     id_materia integer NOT NULL,
     titulo character varying(150) NOT NULL,
@@ -39,15 +24,7 @@ CREATE TABLE public.examenes (
     CONSTRAINT examenes_puntaje_minimo_aprobatorio_check CHECK (((puntaje_minimo_aprobatorio >= 1) AND (puntaje_minimo_aprobatorio <= 100)))
 );
 
-
-ALTER TABLE public.examenes OWNER TO postgres;
-
---
--- TOC entry 214 (class 1259 OID 24745)
--- Name: examenes_id_examen_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.examenes_id_examen_seq
+CREATE SEQUENCE examenes_id_examen_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -55,24 +32,9 @@ CREATE SEQUENCE public.examenes_id_examen_seq
     NO MAXVALUE
     CACHE 1;
 
+ALTER SEQUENCE examenes_id_examen_seq OWNED BY examenes.id_examen;
 
-ALTER TABLE public.examenes_id_examen_seq OWNER TO postgres;
-
---
--- TOC entry 3004 (class 0 OID 0)
--- Dependencies: 214
--- Name: examenes_id_examen_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.examenes_id_examen_seq OWNED BY public.examenes.id_examen;
-
-
---
--- TOC entry 222 (class 1259 OID 24833)
--- Name: historial_puntos; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.historial_puntos (
+CREATE TABLE historial_puntos (
     id_historial integer NOT NULL,
     id_usuario integer NOT NULL,
     puntos_variacion integer NOT NULL,
@@ -80,15 +42,7 @@ CREATE TABLE public.historial_puntos (
     fecha_cambio timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
-
-ALTER TABLE public.historial_puntos OWNER TO postgres;
-
---
--- TOC entry 221 (class 1259 OID 24831)
--- Name: historial_puntos_id_historial_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.historial_puntos_id_historial_seq
+CREATE SEQUENCE historial_puntos_id_historial_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -96,24 +50,9 @@ CREATE SEQUENCE public.historial_puntos_id_historial_seq
     NO MAXVALUE
     CACHE 1;
 
+ALTER SEQUENCE historial_puntos_id_historial_seq OWNED BY historial_puntos.id_historial;
 
-ALTER TABLE public.historial_puntos_id_historial_seq OWNER TO postgres;
-
---
--- TOC entry 3005 (class 0 OID 0)
--- Dependencies: 221
--- Name: historial_puntos_id_historial_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.historial_puntos_id_historial_seq OWNED BY public.historial_puntos.id_historial;
-
-
---
--- TOC entry 218 (class 1259 OID 24783)
--- Name: intentos_examen; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.intentos_examen (
+CREATE TABLE intentos_examen (
     id_intento integer NOT NULL,
     id_usuario integer NOT NULL,
     id_examen integer NOT NULL,
@@ -124,15 +63,7 @@ CREATE TABLE public.intentos_examen (
     CONSTRAINT intentos_examen_nota_final_check CHECK (((nota_final >= 0) AND (nota_final <= 100)))
 );
 
-
-ALTER TABLE public.intentos_examen OWNER TO postgres;
-
---
--- TOC entry 217 (class 1259 OID 24781)
--- Name: intentos_examen_id_intento_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.intentos_examen_id_intento_seq
+CREATE SEQUENCE intentos_examen_id_intento_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -140,39 +71,16 @@ CREATE SEQUENCE public.intentos_examen_id_intento_seq
     NO MAXVALUE
     CACHE 1;
 
+ALTER SEQUENCE intentos_examen_id_intento_seq OWNED BY intentos_examen.id_intento;
 
-ALTER TABLE public.intentos_examen_id_intento_seq OWNER TO postgres;
-
---
--- TOC entry 3006 (class 0 OID 0)
--- Dependencies: 217
--- Name: intentos_examen_id_intento_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.intentos_examen_id_intento_seq OWNED BY public.intentos_examen.id_intento;
-
-
---
--- TOC entry 224 (class 1259 OID 24847)
--- Name: logros; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.logros (
+CREATE TABLE logros (
     id_logro integer NOT NULL,
     nombre character varying(100) NOT NULL,
     descripcion text NOT NULL,
     imagen_medalla character varying(100)
 );
 
-
-ALTER TABLE public.logros OWNER TO postgres;
-
---
--- TOC entry 223 (class 1259 OID 24845)
--- Name: logros_id_logro_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.logros_id_logro_seq
+CREATE SEQUENCE logros_id_logro_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -180,53 +88,22 @@ CREATE SEQUENCE public.logros_id_logro_seq
     NO MAXVALUE
     CACHE 1;
 
+ALTER SEQUENCE logros_id_logro_seq OWNED BY logros.id_logro;
 
-ALTER TABLE public.logros_id_logro_seq OWNER TO postgres;
-
---
--- TOC entry 3007 (class 0 OID 0)
--- Dependencies: 223
--- Name: logros_id_logro_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.logros_id_logro_seq OWNED BY public.logros.id_logro;
-
-
---
--- TOC entry 225 (class 1259 OID 24858)
--- Name: logros_usuario; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.logros_usuario (
+CREATE TABLE logros_usuario (
     id_usuario integer NOT NULL,
     id_logro integer NOT NULL,
     fecha_desbloqueo timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
-
-ALTER TABLE public.logros_usuario OWNER TO postgres;
-
---
--- TOC entry 209 (class 1259 OID 24697)
--- Name: materias; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.materias (
+CREATE TABLE materias (
     id_materia integer NOT NULL,
     nombre character varying(50) NOT NULL,
     descripcion text,
     icono character varying(50)
 );
 
-
-ALTER TABLE public.materias OWNER TO postgres;
-
---
--- TOC entry 208 (class 1259 OID 24695)
--- Name: materias_id_materia_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.materias_id_materia_seq
+CREATE SEQUENCE materias_id_materia_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -234,39 +111,16 @@ CREATE SEQUENCE public.materias_id_materia_seq
     NO MAXVALUE
     CACHE 1;
 
+ALTER SEQUENCE materias_id_materia_seq OWNED BY materias.id_materia;
 
-ALTER TABLE public.materias_id_materia_seq OWNER TO postgres;
-
---
--- TOC entry 3008 (class 0 OID 0)
--- Dependencies: 208
--- Name: materias_id_materia_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.materias_id_materia_seq OWNED BY public.materias.id_materia;
-
-
---
--- TOC entry 213 (class 1259 OID 24730)
--- Name: opciones; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.opciones (
+CREATE TABLE opciones (
     id_opcion integer NOT NULL,
     id_pregunta integer NOT NULL,
     opcion text NOT NULL,
     es_correcta boolean DEFAULT false
 );
 
-
-ALTER TABLE public.opciones OWNER TO postgres;
-
---
--- TOC entry 212 (class 1259 OID 24728)
--- Name: opciones_id_opcion_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.opciones_id_opcion_seq
+CREATE SEQUENCE opciones_id_opcion_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -274,24 +128,9 @@ CREATE SEQUENCE public.opciones_id_opcion_seq
     NO MAXVALUE
     CACHE 1;
 
+ALTER SEQUENCE opciones_id_opcion_seq OWNED BY opciones.id_opcion;
 
-ALTER TABLE public.opciones_id_opcion_seq OWNER TO postgres;
-
---
--- TOC entry 3009 (class 0 OID 0)
--- Dependencies: 212
--- Name: opciones_id_opcion_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.opciones_id_opcion_seq OWNED BY public.opciones.id_opcion;
-
-
---
--- TOC entry 211 (class 1259 OID 24710)
--- Name: preguntas; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.preguntas (
+CREATE TABLE preguntas (
     id_pregunta integer NOT NULL,
     id_materia integer NOT NULL,
     pregunta text NOT NULL,
@@ -301,28 +140,12 @@ CREATE TABLE public.preguntas (
     CONSTRAINT preguntas_puntos_recompensa_check CHECK ((puntos_recompensa > 0))
 );
 
-
-ALTER TABLE public.preguntas OWNER TO postgres;
-
---
--- TOC entry 216 (class 1259 OID 24766)
--- Name: preguntas_examen; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.preguntas_examen (
+CREATE TABLE preguntas_examen (
     id_examen integer NOT NULL,
     id_pregunta integer NOT NULL
 );
 
-
-ALTER TABLE public.preguntas_examen OWNER TO postgres;
-
---
--- TOC entry 210 (class 1259 OID 24708)
--- Name: preguntas_id_pregunta_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.preguntas_id_pregunta_seq
+CREATE SEQUENCE preguntas_id_pregunta_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -330,24 +153,9 @@ CREATE SEQUENCE public.preguntas_id_pregunta_seq
     NO MAXVALUE
     CACHE 1;
 
+ALTER SEQUENCE preguntas_id_pregunta_seq OWNED BY preguntas.id_pregunta;
 
-ALTER TABLE public.preguntas_id_pregunta_seq OWNER TO postgres;
-
---
--- TOC entry 3010 (class 0 OID 0)
--- Dependencies: 210
--- Name: preguntas_id_pregunta_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.preguntas_id_pregunta_seq OWNED BY public.preguntas.id_pregunta;
-
-
---
--- TOC entry 203 (class 1259 OID 16532)
--- Name: progreso; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.progreso (
+CREATE TABLE progreso (
     id_progreso integer NOT NULL,
     id_usuario integer,
     id_pregunta integer,
@@ -355,15 +163,7 @@ CREATE TABLE public.progreso (
     fecha timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
-
-ALTER TABLE public.progreso OWNER TO postgres;
-
---
--- TOC entry 202 (class 1259 OID 16530)
--- Name: progreso_id_progreso_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.progreso_id_progreso_seq
+CREATE SEQUENCE progreso_id_progreso_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -371,24 +171,9 @@ CREATE SEQUENCE public.progreso_id_progreso_seq
     NO MAXVALUE
     CACHE 1;
 
+ALTER SEQUENCE progreso_id_progreso_seq OWNED BY progreso.id_progreso;
 
-ALTER TABLE public.progreso_id_progreso_seq OWNER TO postgres;
-
---
--- TOC entry 3011 (class 0 OID 0)
--- Dependencies: 202
--- Name: progreso_id_progreso_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.progreso_id_progreso_seq OWNED BY public.progreso.id_progreso;
-
-
---
--- TOC entry 220 (class 1259 OID 24805)
--- Name: respuestas_usuario; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.respuestas_usuario (
+CREATE TABLE respuestas_usuario (
     id_respuesta_user integer NOT NULL,
     id_usuario integer NOT NULL,
     id_intento integer NOT NULL,
@@ -397,15 +182,7 @@ CREATE TABLE public.respuestas_usuario (
     es_correcta boolean NOT NULL
 );
 
-
-ALTER TABLE public.respuestas_usuario OWNER TO postgres;
-
---
--- TOC entry 219 (class 1259 OID 24803)
--- Name: respuestas_usuario_id_respuesta_user_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.respuestas_usuario_id_respuesta_user_seq
+CREATE SEQUENCE respuestas_usuario_id_respuesta_user_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -413,24 +190,9 @@ CREATE SEQUENCE public.respuestas_usuario_id_respuesta_user_seq
     NO MAXVALUE
     CACHE 1;
 
+ALTER SEQUENCE respuestas_usuario_id_respuesta_user_seq OWNED BY respuestas_usuario.id_respuesta_user;
 
-ALTER TABLE public.respuestas_usuario_id_respuesta_user_seq OWNER TO postgres;
-
---
--- TOC entry 3012 (class 0 OID 0)
--- Dependencies: 219
--- Name: respuestas_usuario_id_respuesta_user_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.respuestas_usuario_id_respuesta_user_seq OWNED BY public.respuestas_usuario.id_respuesta_user;
-
-
---
--- TOC entry 207 (class 1259 OID 24681)
--- Name: sesiones; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.sesiones (
+CREATE TABLE sesiones (
     id_sesion integer NOT NULL,
     id_usuario integer NOT NULL,
     token_sesion character varying(255) NOT NULL,
@@ -438,15 +200,7 @@ CREATE TABLE public.sesiones (
     fecha_expiracion timestamp without time zone NOT NULL
 );
 
-
-ALTER TABLE public.sesiones OWNER TO postgres;
-
---
--- TOC entry 206 (class 1259 OID 24679)
--- Name: sesiones_id_sesion_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.sesiones_id_sesion_seq
+CREATE SEQUENCE sesiones_id_sesion_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -454,24 +208,9 @@ CREATE SEQUENCE public.sesiones_id_sesion_seq
     NO MAXVALUE
     CACHE 1;
 
+ALTER SEQUENCE sesiones_id_sesion_seq OWNED BY sesiones.id_sesion;
 
-ALTER TABLE public.sesiones_id_sesion_seq OWNER TO postgres;
-
---
--- TOC entry 3013 (class 0 OID 0)
--- Dependencies: 206
--- Name: sesiones_id_sesion_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.sesiones_id_sesion_seq OWNED BY public.sesiones.id_sesion;
-
-
---
--- TOC entry 205 (class 1259 OID 24665)
--- Name: usuarios; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.usuarios (
+CREATE TABLE usuarios (
     id_usuario integer NOT NULL,
     nombre character varying(100) NOT NULL,
     correo character varying(100) NOT NULL,
@@ -486,15 +225,7 @@ CREATE TABLE public.usuarios (
     CONSTRAINT usuarios_rol_check CHECK (((rol)::text = ANY ((ARRAY['estudiante'::character varying, 'admin'::character varying])::text[])))
 );
 
-
-ALTER TABLE public.usuarios OWNER TO postgres;
-
---
--- TOC entry 204 (class 1259 OID 24663)
--- Name: usuarios_id_usuario_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.usuarios_id_usuario_seq
+CREATE SEQUENCE usuarios_id_usuario_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -502,688 +233,130 @@ CREATE SEQUENCE public.usuarios_id_usuario_seq
     NO MAXVALUE
     CACHE 1;
 
-
-ALTER TABLE public.usuarios_id_usuario_seq OWNER TO postgres;
-
---
--- TOC entry 3014 (class 0 OID 0)
--- Dependencies: 204
--- Name: usuarios_id_usuario_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.usuarios_id_usuario_seq OWNED BY public.usuarios.id_usuario;
-
-
---
--- TOC entry 2781 (class 2604 OID 24750)
--- Name: examenes id_examen; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.examenes ALTER COLUMN id_examen SET DEFAULT nextval('public.examenes_id_examen_seq'::regclass);
-
-
---
--- TOC entry 2793 (class 2604 OID 24836)
--- Name: historial_puntos id_historial; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.historial_puntos ALTER COLUMN id_historial SET DEFAULT nextval('public.historial_puntos_id_historial_seq'::regclass);
-
-
---
--- TOC entry 2787 (class 2604 OID 24786)
--- Name: intentos_examen id_intento; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.intentos_examen ALTER COLUMN id_intento SET DEFAULT nextval('public.intentos_examen_id_intento_seq'::regclass);
-
-
---
--- TOC entry 2795 (class 2604 OID 24850)
--- Name: logros id_logro; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.logros ALTER COLUMN id_logro SET DEFAULT nextval('public.logros_id_logro_seq'::regclass);
-
-
---
--- TOC entry 2773 (class 2604 OID 24700)
--- Name: materias id_materia; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.materias ALTER COLUMN id_materia SET DEFAULT nextval('public.materias_id_materia_seq'::regclass);
-
-
---
--- TOC entry 2779 (class 2604 OID 24733)
--- Name: opciones id_opcion; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.opciones ALTER COLUMN id_opcion SET DEFAULT nextval('public.opciones_id_opcion_seq'::regclass);
-
-
---
--- TOC entry 2774 (class 2604 OID 24713)
--- Name: preguntas id_pregunta; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.preguntas ALTER COLUMN id_pregunta SET DEFAULT nextval('public.preguntas_id_pregunta_seq'::regclass);
-
-
---
--- TOC entry 2760 (class 2604 OID 16535)
--- Name: progreso id_progreso; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.progreso ALTER COLUMN id_progreso SET DEFAULT nextval('public.progreso_id_progreso_seq'::regclass);
-
-
---
--- TOC entry 2792 (class 2604 OID 24808)
--- Name: respuestas_usuario id_respuesta_user; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.respuestas_usuario ALTER COLUMN id_respuesta_user SET DEFAULT nextval('public.respuestas_usuario_id_respuesta_user_seq'::regclass);
-
-
---
--- TOC entry 2771 (class 2604 OID 24684)
--- Name: sesiones id_sesion; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.sesiones ALTER COLUMN id_sesion SET DEFAULT nextval('public.sesiones_id_sesion_seq'::regclass);
-
-
---
--- TOC entry 2762 (class 2604 OID 24668)
--- Name: usuarios id_usuario; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.usuarios ALTER COLUMN id_usuario SET DEFAULT nextval('public.usuarios_id_usuario_seq'::regclass);
-
-
---
--- TOC entry 2988 (class 0 OID 24747)
--- Dependencies: 215
--- Data for Name: examenes; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.examenes (id_examen, id_materia, titulo, descripcion, duracion_minutos, puntaje_minimo_aprobatorio, fecha_creacion) FROM stdin;
-1	1	Evaluación Inicial de Sumas	Demuestra tus habilidades básicas con el Lince de Lynko	10	60	2026-06-16 17:35:04.951464
-\.
-
-
---
--- TOC entry 2995 (class 0 OID 24833)
--- Dependencies: 222
--- Data for Name: historial_puntos; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.historial_puntos (id_historial, id_usuario, puntos_variacion, motivo, fecha_cambio) FROM stdin;
-\.
-
-
---
--- TOC entry 2991 (class 0 OID 24783)
--- Dependencies: 218
--- Data for Name: intentos_examen; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.intentos_examen (id_intento, id_usuario, id_examen, nota_final, aprobado, fecha_inicio, fecha_fin) FROM stdin;
-\.
-
-
---
--- TOC entry 2997 (class 0 OID 24847)
--- Dependencies: 224
--- Data for Name: logros; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.logros (id_logro, nombre, descripcion, imagen_medalla) FROM stdin;
-2	Cerebro Matemático	Aprobaste tu primer examen de matemáticas con 100%.	badge_math.png
-1	Primeros Pasos	Te has registrado con éxito en Lynko.	https://cdn.phototourl.com/free/2026-06-20-e0c8fd52-0006-4bdc-bc45-38a57699562b.png
-\.
-
-
---
--- TOC entry 2998 (class 0 OID 24858)
--- Dependencies: 225
--- Data for Name: logros_usuario; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.logros_usuario (id_usuario, id_logro, fecha_desbloqueo) FROM stdin;
-3	1	2026-06-19 12:50:08.865713
-5	1	2026-06-19 14:31:49.29847
-6	1	2026-06-20 06:44:47.157324
-7	1	2026-06-20 07:09:13.081301
-8	1	2026-06-20 09:45:13.405766
-\.
-
-
---
--- TOC entry 2982 (class 0 OID 24697)
--- Dependencies: 209
--- Data for Name: materias; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.materias (id_materia, nombre, descripcion, icono) FROM stdin;
-1	Matemáticas	Aprende a sumar, restar y resolver acertijos numéricos.	pi-calculator
-2	Español	Mejora tu lectura, ortografía y descubre grandes historias.	book-open
-3	Biología	Explora la naturaleza, los animales y el cuerpo humano.	heart-pulse
-\.
-
-
---
--- TOC entry 2986 (class 0 OID 24730)
--- Dependencies: 213
--- Data for Name: opciones; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.opciones (id_opcion, id_pregunta, opcion, es_correcta) FROM stdin;
-1	1	25	f
-2	1	27	t
-3	1	30	f
-4	2	3	t
-5	2	2	f
-6	2	4	f
-7	3	Perro	f
-8	3	Cantar	t
-9	3	Bonito	f
-10	4	Dióxido de Carbono	f
-11	4	Oxígeno	t
-12	4	Nitrógeno	f
-\.
-
-
---
--- TOC entry 2984 (class 0 OID 24710)
--- Dependencies: 211
--- Data for Name: preguntas; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.preguntas (id_pregunta, id_materia, pregunta, nivel_dificultad, puntos_recompensa) FROM stdin;
-1	1	¿Cuánto es 15 + 12?	1	10
-2	1	Si Lynko tiene 5 manzanas y regala 2, ¿cuántas le quedan?	1	10
-3	2	¿Cuál de las siguientes palabras es un verbo?	1	10
-4	3	¿Qué gas respiramos los seres humanos de manera vital?	1	15
-\.
-
-
---
--- TOC entry 2989 (class 0 OID 24766)
--- Dependencies: 216
--- Data for Name: preguntas_examen; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.preguntas_examen (id_examen, id_pregunta) FROM stdin;
-1	1
-1	2
-\.
-
-
---
--- TOC entry 2976 (class 0 OID 16532)
--- Dependencies: 203
--- Data for Name: progreso; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.progreso (id_progreso, id_usuario, id_pregunta, correcta, fecha) FROM stdin;
-\.
-
-
---
--- TOC entry 2993 (class 0 OID 24805)
--- Dependencies: 220
--- Data for Name: respuestas_usuario; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.respuestas_usuario (id_respuesta_user, id_usuario, id_intento, id_pregunta, id_opcion_seleccionada, es_correcta) FROM stdin;
-\.
-
-
---
--- TOC entry 2980 (class 0 OID 24681)
--- Dependencies: 207
--- Data for Name: sesiones; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.sesiones (id_sesion, id_usuario, token_sesion, fecha_creacion, fecha_expiracion) FROM stdin;
-\.
-
-
---
--- TOC entry 2978 (class 0 OID 24665)
--- Dependencies: 205
--- Data for Name: usuarios; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.usuarios (id_usuario, nombre, correo, "contraseña", puntaje_total, rol, activo, fecha_registro, nivel, dias_racha) FROM stdin;
-1	Administrador Lynko	admin@lynko.com	Admin1234*	0	admin	t	2026-06-16 17:35:04.951464	0	0
-3	Rodrigo	rodrigo@gmail.com	123456789	0	estudiante	t	2026-06-19 12:50:08.865713	0	0
-4	Freddy Ardila	freddycardila@gmail.com	123456	0	estudiante	t	2026-06-19 13:25:30.239829	0	0
-5	montserrat	montsee@gmail.com	iori0205	0	estudiante	t	2026-06-19 14:31:49.29847	0	0
-6	Maria Rojas Parra	MariaR@gmail.com	123456789	0	estudiante	t	2026-06-20 06:44:47.157324	0	0
-7	lola la vaca	lolita18@hotmail.com	Lal0lita18	0	estudiante	t	2026-06-20 07:09:13.081301	0	0
-8	Juan Rulfo	juan@rulfo.com	Rulfo1234	0	estudiante	t	2026-06-20 09:45:13.405766	0	0
-\.
-
-
---
--- TOC entry 3015 (class 0 OID 0)
--- Dependencies: 214
--- Name: examenes_id_examen_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.examenes_id_examen_seq', 1, true);
-
-
---
--- TOC entry 3016 (class 0 OID 0)
--- Dependencies: 221
--- Name: historial_puntos_id_historial_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.historial_puntos_id_historial_seq', 1, false);
-
-
---
--- TOC entry 3017 (class 0 OID 0)
--- Dependencies: 217
--- Name: intentos_examen_id_intento_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.intentos_examen_id_intento_seq', 1, false);
-
-
---
--- TOC entry 3018 (class 0 OID 0)
--- Dependencies: 223
--- Name: logros_id_logro_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.logros_id_logro_seq', 2, true);
-
-
---
--- TOC entry 3019 (class 0 OID 0)
--- Dependencies: 208
--- Name: materias_id_materia_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.materias_id_materia_seq', 3, true);
-
-
---
--- TOC entry 3020 (class 0 OID 0)
--- Dependencies: 212
--- Name: opciones_id_opcion_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.opciones_id_opcion_seq', 12, true);
-
-
---
--- TOC entry 3021 (class 0 OID 0)
--- Dependencies: 210
--- Name: preguntas_id_pregunta_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.preguntas_id_pregunta_seq', 4, true);
-
-
---
--- TOC entry 3022 (class 0 OID 0)
--- Dependencies: 202
--- Name: progreso_id_progreso_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.progreso_id_progreso_seq', 1, false);
-
-
---
--- TOC entry 3023 (class 0 OID 0)
--- Dependencies: 219
--- Name: respuestas_usuario_id_respuesta_user_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.respuestas_usuario_id_respuesta_user_seq', 1, false);
-
-
---
--- TOC entry 3024 (class 0 OID 0)
--- Dependencies: 206
--- Name: sesiones_id_sesion_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.sesiones_id_sesion_seq', 1, false);
-
-
---
--- TOC entry 3025 (class 0 OID 0)
--- Dependencies: 204
--- Name: usuarios_id_usuario_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.usuarios_id_usuario_seq', 8, true);
-
-
---
--- TOC entry 2816 (class 2606 OID 24760)
--- Name: examenes examenes_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.examenes
-    ADD CONSTRAINT examenes_pkey PRIMARY KEY (id_examen);
-
-
---
--- TOC entry 2826 (class 2606 OID 24839)
--- Name: historial_puntos historial_puntos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.historial_puntos
-    ADD CONSTRAINT historial_puntos_pkey PRIMARY KEY (id_historial);
-
-
---
--- TOC entry 2821 (class 2606 OID 24792)
--- Name: intentos_examen intentos_examen_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.intentos_examen
-    ADD CONSTRAINT intentos_examen_pkey PRIMARY KEY (id_intento);
-
-
---
--- TOC entry 2829 (class 2606 OID 24857)
--- Name: logros logros_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.logros
-    ADD CONSTRAINT logros_nombre_key UNIQUE (nombre);
-
-
---
--- TOC entry 2831 (class 2606 OID 24855)
--- Name: logros logros_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.logros
-    ADD CONSTRAINT logros_pkey PRIMARY KEY (id_logro);
-
-
---
--- TOC entry 2833 (class 2606 OID 24863)
--- Name: logros_usuario logros_usuario_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.logros_usuario
-    ADD CONSTRAINT logros_usuario_pkey PRIMARY KEY (id_usuario, id_logro);
-
-
---
--- TOC entry 2808 (class 2606 OID 24707)
--- Name: materias materias_nombre_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.materias
-    ADD CONSTRAINT materias_nombre_key UNIQUE (nombre);
-
-
---
--- TOC entry 2810 (class 2606 OID 24705)
--- Name: materias materias_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.materias
-    ADD CONSTRAINT materias_pkey PRIMARY KEY (id_materia);
-
-
---
--- TOC entry 2814 (class 2606 OID 24739)
--- Name: opciones opciones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.opciones
-    ADD CONSTRAINT opciones_pkey PRIMARY KEY (id_opcion);
-
-
---
--- TOC entry 2818 (class 2606 OID 24770)
--- Name: preguntas_examen preguntas_examen_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.preguntas_examen
-    ADD CONSTRAINT preguntas_examen_pkey PRIMARY KEY (id_examen, id_pregunta);
-
-
---
--- TOC entry 2812 (class 2606 OID 24722)
--- Name: preguntas preguntas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.preguntas
-    ADD CONSTRAINT preguntas_pkey PRIMARY KEY (id_pregunta);
-
-
---
--- TOC entry 2798 (class 2606 OID 16538)
--- Name: progreso progreso_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.progreso
-    ADD CONSTRAINT progreso_pkey PRIMARY KEY (id_progreso);
-
-
---
--- TOC entry 2824 (class 2606 OID 24810)
--- Name: respuestas_usuario respuestas_usuario_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.respuestas_usuario
-    ADD CONSTRAINT respuestas_usuario_pkey PRIMARY KEY (id_respuesta_user);
-
-
---
--- TOC entry 2804 (class 2606 OID 24687)
--- Name: sesiones sesiones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.sesiones
-    ADD CONSTRAINT sesiones_pkey PRIMARY KEY (id_sesion);
-
-
---
--- TOC entry 2806 (class 2606 OID 24689)
--- Name: sesiones sesiones_token_sesion_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.sesiones
-    ADD CONSTRAINT sesiones_token_sesion_key UNIQUE (token_sesion);
-
-
---
--- TOC entry 2800 (class 2606 OID 24678)
--- Name: usuarios usuarios_correo_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.usuarios
-    ADD CONSTRAINT usuarios_correo_key UNIQUE (correo);
-
-
---
--- TOC entry 2802 (class 2606 OID 24676)
--- Name: usuarios usuarios_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.usuarios
-    ADD CONSTRAINT usuarios_pkey PRIMARY KEY (id_usuario);
-
-
---
--- TOC entry 2819 (class 1259 OID 24874)
--- Name: idx_intentos_usuario; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_intentos_usuario ON public.intentos_examen USING btree (id_usuario);
-
-
---
--- TOC entry 2827 (class 1259 OID 24876)
--- Name: idx_puntos_usuario; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_puntos_usuario ON public.historial_puntos USING btree (id_usuario);
-
-
---
--- TOC entry 2822 (class 1259 OID 24875)
--- Name: idx_respuestas_intento; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX idx_respuestas_intento ON public.respuestas_usuario USING btree (id_intento);
-
-
---
--- TOC entry 2837 (class 2606 OID 24761)
--- Name: examenes examenes_id_materia_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.examenes
-    ADD CONSTRAINT examenes_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materias(id_materia) ON DELETE CASCADE;
-
-
---
--- TOC entry 2846 (class 2606 OID 24840)
--- Name: historial_puntos historial_puntos_id_usuario_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.historial_puntos
-    ADD CONSTRAINT historial_puntos_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuarios(id_usuario) ON DELETE CASCADE;
-
-
---
--- TOC entry 2841 (class 2606 OID 24798)
--- Name: intentos_examen intentos_examen_id_examen_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.intentos_examen
-    ADD CONSTRAINT intentos_examen_id_examen_fkey FOREIGN KEY (id_examen) REFERENCES public.examenes(id_examen) ON DELETE CASCADE;
-
-
---
--- TOC entry 2840 (class 2606 OID 24793)
--- Name: intentos_examen intentos_examen_id_usuario_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.intentos_examen
-    ADD CONSTRAINT intentos_examen_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuarios(id_usuario) ON DELETE CASCADE;
-
-
---
--- TOC entry 2848 (class 2606 OID 24869)
--- Name: logros_usuario logros_usuario_id_logro_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.logros_usuario
-    ADD CONSTRAINT logros_usuario_id_logro_fkey FOREIGN KEY (id_logro) REFERENCES public.logros(id_logro) ON DELETE CASCADE;
-
-
---
--- TOC entry 2847 (class 2606 OID 24864)
--- Name: logros_usuario logros_usuario_id_usuario_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.logros_usuario
-    ADD CONSTRAINT logros_usuario_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuarios(id_usuario) ON DELETE CASCADE;
-
-
---
--- TOC entry 2836 (class 2606 OID 24740)
--- Name: opciones opciones_id_pregunta_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.opciones
-    ADD CONSTRAINT opciones_id_pregunta_fkey FOREIGN KEY (id_pregunta) REFERENCES public.preguntas(id_pregunta) ON DELETE CASCADE;
-
-
---
--- TOC entry 2838 (class 2606 OID 24771)
--- Name: preguntas_examen preguntas_examen_id_examen_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.preguntas_examen
-    ADD CONSTRAINT preguntas_examen_id_examen_fkey FOREIGN KEY (id_examen) REFERENCES public.examenes(id_examen) ON DELETE CASCADE;
-
-
---
--- TOC entry 2839 (class 2606 OID 24776)
--- Name: preguntas_examen preguntas_examen_id_pregunta_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.preguntas_examen
-    ADD CONSTRAINT preguntas_examen_id_pregunta_fkey FOREIGN KEY (id_pregunta) REFERENCES public.preguntas(id_pregunta) ON DELETE CASCADE;
-
-
---
--- TOC entry 2835 (class 2606 OID 24723)
--- Name: preguntas preguntas_id_materia_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.preguntas
-    ADD CONSTRAINT preguntas_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES public.materias(id_materia) ON DELETE CASCADE;
-
-
---
--- TOC entry 2843 (class 2606 OID 24816)
--- Name: respuestas_usuario respuestas_usuario_id_intento_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.respuestas_usuario
-    ADD CONSTRAINT respuestas_usuario_id_intento_fkey FOREIGN KEY (id_intento) REFERENCES public.intentos_examen(id_intento) ON DELETE CASCADE;
-
-
---
--- TOC entry 2845 (class 2606 OID 24826)
--- Name: respuestas_usuario respuestas_usuario_id_opcion_seleccionada_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.respuestas_usuario
-    ADD CONSTRAINT respuestas_usuario_id_opcion_seleccionada_fkey FOREIGN KEY (id_opcion_seleccionada) REFERENCES public.opciones(id_opcion) ON DELETE CASCADE;
-
-
---
--- TOC entry 2844 (class 2606 OID 24821)
--- Name: respuestas_usuario respuestas_usuario_id_pregunta_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.respuestas_usuario
-    ADD CONSTRAINT respuestas_usuario_id_pregunta_fkey FOREIGN KEY (id_pregunta) REFERENCES public.preguntas(id_pregunta) ON DELETE CASCADE;
-
-
---
--- TOC entry 2842 (class 2606 OID 24811)
--- Name: respuestas_usuario respuestas_usuario_id_usuario_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.respuestas_usuario
-    ADD CONSTRAINT respuestas_usuario_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuarios(id_usuario) ON DELETE CASCADE;
-
-
---
--- TOC entry 2834 (class 2606 OID 24690)
--- Name: sesiones sesiones_id_usuario_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.sesiones
-    ADD CONSTRAINT sesiones_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES public.usuarios(id_usuario) ON DELETE CASCADE;
-
-
--- Completed on 2026-06-20 10:37:07
-
---
--- PostgreSQL database dump complete
---
+ALTER SEQUENCE usuarios_id_usuario_seq OWNED BY usuarios.id_usuario;
+
+ALTER TABLE ONLY examenes ALTER COLUMN id_examen SET DEFAULT nextval('examenes_id_examen_seq'::regclass);
+ALTER TABLE ONLY historial_puntos ALTER COLUMN id_historial SET DEFAULT nextval('historial_puntos_id_historial_seq'::regclass);
+ALTER TABLE ONLY intentos_examen ALTER COLUMN id_intento SET DEFAULT nextval('intentos_examen_id_intento_seq'::regclass);
+ALTER TABLE ONLY logros ALTER COLUMN id_logro SET DEFAULT nextval('logros_id_logro_seq'::regclass);
+ALTER TABLE ONLY materias ALTER COLUMN id_materia SET DEFAULT nextval('materias_id_materia_seq'::regclass);
+ALTER TABLE ONLY opciones ALTER COLUMN id_opcion SET DEFAULT nextval('opciones_id_opcion_seq'::regclass);
+ALTER TABLE ONLY preguntas ALTER COLUMN id_pregunta SET DEFAULT nextval('preguntas_id_pregunta_seq'::regclass);
+ALTER TABLE ONLY progreso ALTER COLUMN id_progreso SET DEFAULT nextval('progreso_id_progreso_seq'::regclass);
+ALTER TABLE ONLY respuestas_usuario ALTER COLUMN id_respuesta_user SET DEFAULT nextval('respuestas_usuario_id_respuesta_user_seq'::regclass);
+ALTER TABLE ONLY sesiones ALTER COLUMN id_sesion SET DEFAULT nextval('sesiones_id_sesion_seq'::regclass);
+ALTER TABLE ONLY usuarios ALTER COLUMN id_usuario SET DEFAULT nextval('usuarios_id_usuario_seq'::regclass);
+
+ALTER TABLE ONLY examenes ADD CONSTRAINT examenes_pkey PRIMARY KEY (id_examen);
+ALTER TABLE ONLY historial_puntos ADD CONSTRAINT historial_puntos_pkey PRIMARY KEY (id_historial);
+ALTER TABLE ONLY intentos_examen ADD CONSTRAINT intentos_examen_pkey PRIMARY KEY (id_intento);
+ALTER TABLE ONLY logros ADD CONSTRAINT logros_nombre_key UNIQUE (nombre);
+ALTER TABLE ONLY logros ADD CONSTRAINT logros_pkey PRIMARY KEY (id_logro);
+ALTER TABLE ONLY logros_usuario ADD CONSTRAINT logros_usuario_pkey PRIMARY KEY (id_usuario, id_logro);
+ALTER TABLE ONLY materias ADD CONSTRAINT materias_nombre_key UNIQUE (nombre);
+ALTER TABLE ONLY materias ADD CONSTRAINT materias_pkey PRIMARY KEY (id_materia);
+ALTER TABLE ONLY opciones ADD CONSTRAINT opciones_pkey PRIMARY KEY (id_opcion);
+ALTER TABLE ONLY preguntas_examen ADD CONSTRAINT preguntas_examen_pkey PRIMARY KEY (id_examen, id_pregunta);
+ALTER TABLE ONLY preguntas ADD CONSTRAINT preguntas_pkey PRIMARY KEY (id_pregunta);
+ALTER TABLE ONLY progreso ADD CONSTRAINT progreso_pkey PRIMARY KEY (id_progreso);
+ALTER TABLE ONLY respuestas_usuario ADD CONSTRAINT respuestas_usuario_pkey PRIMARY KEY (id_respuesta_user);
+ALTER TABLE ONLY sesiones ADD CONSTRAINT sesiones_pkey PRIMARY KEY (id_sesion);
+ALTER TABLE ONLY sesiones ADD CONSTRAINT sesiones_token_sesion_key UNIQUE (token_sesion);
+ALTER TABLE ONLY usuarios ADD CONSTRAINT usuarios_correo_key UNIQUE (correo);
+ALTER TABLE ONLY usuarios ADD CONSTRAINT usuarios_pkey PRIMARY KEY (id_usuario);
+
+CREATE INDEX idx_intentos_usuario ON intentos_examen USING btree (id_usuario);
+CREATE INDEX idx_puntos_usuario ON historial_puntos USING btree (id_usuario);
+CREATE INDEX idx_respuestas_intento ON respuestas_usuario USING btree (id_intento);
+
+ALTER TABLE ONLY examenes ADD CONSTRAINT examenes_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES materias(id_materia) ON DELETE CASCADE;
+ALTER TABLE ONLY historial_puntos ADD CONSTRAINT historial_puntos_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE;
+ALTER TABLE ONLY intentos_examen ADD CONSTRAINT intentos_examen_id_examen_fkey FOREIGN KEY (id_examen) REFERENCES examenes(id_examen) ON DELETE CASCADE;
+ALTER TABLE ONLY intentos_examen ADD CONSTRAINT intentos_examen_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE;
+ALTER TABLE ONLY logros_usuario ADD CONSTRAINT logros_usuario_id_logro_fkey FOREIGN KEY (id_logro) REFERENCES logros(id_logro) ON DELETE CASCADE;
+ALTER TABLE ONLY logros_usuario ADD CONSTRAINT logros_usuario_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE;
+ALTER TABLE ONLY opciones ADD CONSTRAINT opciones_id_pregunta_fkey FOREIGN KEY (id_pregunta) REFERENCES preguntas(id_pregunta) ON DELETE CASCADE;
+ALTER TABLE ONLY preguntas_examen ADD CONSTRAINT preguntas_examen_id_examen_fkey FOREIGN KEY (id_examen) REFERENCES examenes(id_examen) ON DELETE CASCADE;
+ALTER TABLE ONLY preguntas_examen ADD CONSTRAINT preguntas_examen_id_pregunta_fkey FOREIGN KEY (id_pregunta) REFERENCES preguntas(id_pregunta) ON DELETE CASCADE;
+ALTER TABLE ONLY preguntas ADD CONSTRAINT preguntas_id_materia_fkey FOREIGN KEY (id_materia) REFERENCES materias(id_materia) ON DELETE CASCADE;
+ALTER TABLE ONLY respuestas_usuario ADD CONSTRAINT respuestas_usuario_id_intento_fkey FOREIGN KEY (id_intento) REFERENCES intentos_examen(id_intento) ON DELETE CASCADE;
+ALTER TABLE ONLY respuestas_usuario ADD CONSTRAINT respuestas_usuario_id_opcion_seleccionada_fkey FOREIGN KEY (id_opcion_seleccionada) REFERENCES opciones(id_opcion) ON DELETE CASCADE;
+ALTER TABLE ONLY respuestas_usuario ADD CONSTRAINT respuestas_usuario_id_pregunta_fkey FOREIGN KEY (id_pregunta) REFERENCES preguntas(id_pregunta) ON DELETE CASCADE;
+ALTER TABLE ONLY respuestas_usuario ADD CONSTRAINT respuestas_usuario_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE;
+ALTER TABLE ONLY sesiones ADD CONSTRAINT sesiones_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE;
+
+-- 1. INSERTAR EN LA TABLA: usuarios
+INSERT INTO usuarios (id_usuario, nombre, correo, "contraseña", puntaje_total, rol, activo, fecha_registro, nivel, dias_racha) VALUES
+(1, 'Administrador Lynko', 'admin@lynko.com', 'Admin1234*', 0, 'admin', true, '2026-06-16 17:35:04.951464', 0, 0),
+(3, 'Rodrigo', 'rodrigo@gmail.com', '123456789', 0, 'estudiante', true, '2026-06-19 12:50:08.865713', 0, 0),
+(4, 'Freddy Ardila', 'freddycardila@gmail.com', '123456', 0, 'estudiante', true, '2026-06-19 13:25:30.239829', 0, 0),
+(5, 'montserrat', 'montsee@gmail.com', 'iori0205', 0, 'estudiante', true, '2026-06-19 14:31:49.29847', 0, 0),
+(6, 'Maria Rojas Parra', 'MariaR@gmail.com', '123456789', 0, 'estudiante', true, '2026-06-20 06:44:47.157324', 0, 0),
+(7, 'lola la vaca', 'lolita18@hotmail.com', 'Lal0lita18', 0, 'estudiante', true, '2026-06-20 07:09:13.081301', 0, 0),
+(8, 'Juan Rulfo', 'juan@rulfo.com', 'Rulfo1234', 0, 'estudiante', true, '2026-06-20 09:45:13.405766', 0, 0);
+
+-- 2. INSERTAR EN LA TABLA: materias
+INSERT INTO materias (id_materia, nombre, descripcion, icono) VALUES
+(1, 'Matemáticas', 'Aprende a sumar, restar y resolver acertijos numéricos.', 'pi-calculator'),
+(2, 'Español', 'Mejora tu lectura, ortografía y descubre grandes historias.', 'book-open'),
+(3, 'Biología', 'Explora la naturaleza, los animales y el cuerpo humano.', 'heart-pulse');
+
+-- 3. INSERTAR EN LA TABLA: examenes
+INSERT INTO examenes (id_examen, id_materia, titulo, descripcion, duracion_minutos, puntaje_minimo_aprobatorio, fecha_creacion) VALUES
+(1, 1, 'Evaluación Inicial de Sumas', 'Demuestra tus habilidades básicas con el Lince de Lynko', 10, 60, '2026-06-16 17:35:04.951464');
+
+-- 4. INSERTAR EN LA TABLA: logros
+INSERT INTO logros (id_logro, nombre, descripcion, imagen_medalla) VALUES
+(1, 'Primeros Pasos', 'Te has registrado con éxito en Lynko.', 'https://cdn.phototourl.com/free/2026-06-20-e0c8fd52-0006-4bdc-bc45-38a57699562b.png'),
+(2, 'Cerebro Matemático', 'Aprobaste tu primer examen de matemáticas con 100%.', 'badge_math.png');
+
+-- 5. INSERTAR EN LA TABLA: logros_usuario
+INSERT INTO logros_usuario (id_usuario, id_logro, fecha_desbloqueo) VALUES
+(3, 1, '2026-06-19 12:50:08.865713'),
+(5, 1, '2026-06-19 14:31:49.29847'),
+(6, 1, '2026-06-20 06:44:47.157324'),
+(7, 1, '2026-06-20 07:09:13.081301'),
+(8, 1, '2026-06-20 09:45:13.405766');
+
+-- 6. INSERTAR EN LA TABLA: preguntas
+INSERT INTO preguntas (id_pregunta, id_materia, pregunta, nivel_dificultad, puntos_recompensa) VALUES
+(1, 1, '¿Cuánto es 15 + 12?', 1, 10),
+(2, 1, 'Si Lynko tiene 5 manzanas y regala 2, ¿cuántas le quedan?', 1, 10),
+(3, 2, '¿Cuál de las siguientes palabras es un verbo?', 1, 10),
+(4, 3, '¿Qué gas respiramos los seres humanos de manera vital?', 1, 15);
+
+-- 7. INSERTAR EN LA TABLA: preguntas_examen
+INSERT INTO preguntas_examen (id_examen, id_pregunta) VALUES
+(1, 1),
+(1, 2);
+
+-- 8. INSERTAR EN LA TABLA: opciones
+INSERT INTO opciones (id_opcion, id_pregunta, opcion, es_correcta) VALUES
+(1, 1, '25', false),
+(2, 1, '27', true),
+(3, 1, '30', false),
+(4, 2, '3', true),
+(5, 2, '2', false),
+(6, 2, '4', false),
+(7, 3, 'Perro', false),
+(8, 3, 'Cantar', true),
+(9, 3, 'Bonito', false),
+(10, 4, 'Dióxido de Carbono', false),
+(11, 4, 'Oxígeno', true),
+(12, 4, 'Nitrógeno', false);
+
+-- 9. AJUSTAR CONTADORES DE LAS SECUENCIAS (Para evitar errores de duplicidad en futuros registros)
+SELECT setval('usuarios_id_usuario_seq', 8, true);
+SELECT setval('materias_id_materia_seq', 3, true);
+SELECT setval('examenes_id_examen_seq', 1, true);
+SELECT setval('logros_id_logro_seq', 2, true);
+SELECT setval('preguntas_id_pregunta_seq', 4, true);
+SELECT setval('opciones_id_opcion_seq', 12, true);
+SELECT setval('historial_puntos_id_historial_seq', 1, false);
+SELECT setval('intentos_examen_id_intento_seq', 1, false);
+SELECT setval('progreso_id_progreso_seq', 1, false);
+SELECT setval('respuestas_usuario_id_respuesta_user_seq', 1, false);
+SELECT setval('sesiones_id_sesion_seq', 1, false);
 
 ALTER TABLE materias ADD COLUMN link_imagen TEXT;
 
