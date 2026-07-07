@@ -6,24 +6,21 @@ RAIZ_PROYECTO = os.path.dirname(os.path.abspath(__file__))
 if RAIZ_PROYECTO not in sys.path:
     sys.path.insert(0, RAIZ_PROYECTO)
 
-<<<<<<< HEAD
-=======
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
->>>>>>> e223761f2c5a24c8c91c5b8a8389064969d119fb
+
 from typing import Optional
 from fastapi import FastAPI, Request, HTTPException, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-<<<<<<< HEAD
+
 # IMPORTANTE: Importamos el objeto templates ya configurado
 from config_templates import templates 
-=======
 # Importación de funciones controladoras desde la capa de Modelos (Auth)
 from models.estudiantes import obtener_perfil_estudiante, obtener_logros_estudiante
->>>>>>> e223761f2c5a24c8c91c5b8a8389064969d119fb
+
 
 from models.auth import verificar_credenciales_login, registrar_nuevo_estudiante
 from routers import estudiantes, admin
