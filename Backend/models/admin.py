@@ -1,96 +1,72 @@
-from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, EmailStr, Field
+import datetime
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, CheckConstraint, ForeignKey
+from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
 
-class UsuarioModel(BaseModel):
-    id_usuario: int
-    nombre: str = Field(..., max_length=100)
-    correo: EmailStr
-    contrasena: str = Field(..., alias="contraseña")
-    puntaje_total: int = 0
-    rol: str = "estudiante"
-    activo: bool = True
-    fecha_registro: datetime = Field(default_factory=datetime.now)
-    nivel: int = 0
-    dias_racha: int = 0
+Base = declarative_base()
 
-    class Config:
-        populate_by_name = True
+class Materia(Base):
+    __tablename__ = 'materias'
+    
+    id_materia = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String(50), unique=True, nullable=False)
+    descripcion = Column(String, nullable=True)
+    icono = Column(String(50), nullable=True)
+    link_imagen = Column(String, nullable=True)
 
-class MateriaModel(BaseModel):
-    id_materia: int
-    nombre: str = Field(..., max_length=50)
-    descripcion: Optional[str] = None
-    icono: Optional[str] = Field(None, max_length=50)
-    link_imagen: Optional[str] = None
 
-class PreguntaModel(BaseModel):
-    id_pregunta: int
-    id_materia: int
-    pregunta: str
-    nivel_dificultad: int = Field(1, ge=1, le=5)
-    puntos_recompensa: int = Field(10, gt=0)
+class Pregunta(Base):
+    __tablename__ = 'preguntas'
+    
+    id_pregunta = Column(Integer, primary_key=True, autoincrement=True)
+    id_materia = Column(Integer, ForeignKey('materias.id_materia', ondelete='CASCADE'), nullable=False)
+    pregunta = Column(String, nullable=False)
+    nivel_dificultad = Column(Integer, default=1)
+    puntos_recompensa = Column(Integer, default=10)
 
-class OpcionModel(BaseModel):
-    id_opcion: int
-    id_pregunta: int
-    opcion: str
-    es_correcta: bool
+    __table_args__ = (
+        CheckConstraint('nivel_dificultad >= 1 AND nivel_dificultad <= 5', name='preguntas_nivel_dificultad_check'),
+        CheckConstraint('puntos_recompensa > 0', name='preguntas_puntos_recompensa_check'),
+    )
 
-class ExamenModel(BaseModel):
-    id_examen: int
-    id_materia: int
-    titulo: str = Field(..., max_length=150)
-    descripcion: Optional[str] = None
-    duracion_minutos: int = Field(15, gt=0)
-    puntaje_minimo_aprobatorio: int = Field(60, ge=1, le=100)
-    fecha_creacion: datetime = Field(default_factory=datetime.now)
 
-class IntentoExamenModel(BaseModel):
-    id_intento: int
-    id_usuario: int
-    id_examen: int
-    nota_final: int = Field(0, ge=0, le=100)
-    aprobado: bool = False
-    fecha_inicio: datetime = Field(default_factory=datetime.now)
-    fecha_fin: Optional[datetime] = None
+class Opcion(Base):
+    __tablename__ = 'opciones'
+    
+    id_opcion = Column(Integer, primary_key=True, autoincrement=True)
+    id_pregunta = Column(Integer, ForeignKey('preguntas.id_pregunta', ondelete='CASCADE'), nullable=False)
+    opcion = Column(String, nullable=False)
+    es_correcta = Column(Boolean, default=False)
 
-class RespuestaUsuarioModel(BaseModel):
-    id_respuesta_user: int
-    id_usuario: int
-    id_intento: int
-    id_pregunta: int
-    id_opcion_seleccionada: int
-    es_correcta: bool
 
-class ProgresoModel(BaseModel):
-    id_progreso: int
-    id_usuario: int
-    id_pregunta: int
-    correcta: bool
-    fecha: datetime = Field(default_factory=datetime.now)
+class Examen(Base):
+    __tablename__ = 'examenes'
+    
+    id_examen = Column(Integer, primary_key=True, autoincrement=True)
+    id_materia = Column(Integer, ForeignKey('materias.id_materia', ondelete='CASCADE'), nullable=False)
+    titulo = Column(String(150), nullable=False)
+    descripcion = Column(String, nullable=True)
+    duracion_minutos = Column(Integer, default=15)
+    puntaje_minimo_aprobatorio = Column(Integer, default=60)
+    fecha_creacion = Column(DateTime, default=datetime.datetime.utcnow)
 
-class LogroModel(BaseModel):
-    id_logro: int
-    nombre: str = Field(..., max_length=100)
-    descripcion: str
-    imagen_medalla: Optional[str] = Field(None, max_length=100)
+    __table_args__ = (
+        CheckConstraint('duracion_minutos > 0', name='examenes_duracion_minutos_check'),
+        CheckConstraint('puntaje_minimo_aprobatorio >= 1 AND puntaje_minimo_aprobatorio <= 100', name='examenes_puntaje_minimo_aprobatorio_check'),
+    )
 
-class LogroUsuarioModel(BaseModel):
-    id_usuario: int
-    id_logro: int
-    fecha_desbloqueo: datetime = Field(default_factory=datetime.now)
 
-class HistorialPuntosModel(BaseModel):
-    id_historial: int
-    id_usuario: int
-    puntos_variacion: int
-    motivo: str = Field(..., max_length=255)
-    fecha_cambio: datetime = Field(default_factory=datetime.now)
+class PreguntaExamen(Base):
+    __tablename__ = 'preguntas_examen'
+    
+    id_examen = Column(Integer, ForeignKey('examenes.id_examen', ondelete='CASCADE'), primary_key=True)
+    id_pregunta = Column(Integer, ForeignKey('preguntas.id_pregunta', ondelete='CASCADE'), primary_key=True)
 
-class SesionModel(BaseModel):
-    id_sesion: int
-    id_usuario: int
-    token_sesion: str = Field(..., max_length=255)
-    fecha_creacion: datetime = Field(default_factory=datetime.now)
-    fecha_expiracion: datetime
+
+class Logro(Base):
+    __tablename__ = 'logros'
+    
+    id_logro = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String(100), unique=True, nullable=False)
+    descripcion = Column(String, nullable=False)
+    imagen_medalla = Column(String(100), nullable=True)
