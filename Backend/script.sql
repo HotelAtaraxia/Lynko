@@ -371,4 +371,138 @@ WHERE id_materia = 2;
 UPDATE materias 
 SET link_imagen = 'https://cdn.phototourl.com/member/2026-06-27-583233bf-4a1d-4970-990f-1d0085dc7d33.png' 
 WHERE id_materia = 3;
-COMMIT
+
+
+CREATE TABLE retos_semanales (
+
+    id_reto integer NOT NULL,
+
+    titulo_general character varying(150) NOT NULL, 
+
+    descripcion text,
+
+    fecha_inicio timestamp without time zone NOT NULL,
+
+    fecha_fin timestamp without time zone NOT NULL,
+
+    CONSTRAINT retos_semanales_pkey PRIMARY KEY (id_reto)
+
+);
+
+
+
+ALTER TABLE retos_semanales 
+
+ADD COLUMN puntos_recompensa_total INT;
+
+
+
+CREATE TABLE partes_cuento_reto (
+
+    id_parte_cuento integer NOT NULL,
+
+    id_reto integer NOT NULL, -- Conexión con el reto de la semana
+
+    numero_parte integer NOT NULL, -- Del 1 al 5
+
+    titulo_parte character varying(150), -- Ej: 'Parte 1: El mapa perdido'
+
+    link_audio text NOT NULL, -- ¡Cada parte tiene su propio audio aquí!
+
+    contenido_texto text, -- Por si quieren leer además de escuchar
+
+    CONSTRAINT partes_cuento_pkey PRIMARY KEY (id_parte_cuento),
+
+    CONSTRAINT partes_cuento_id_reto_fkey FOREIGN KEY (id_reto) REFERENCES retos_semanales(id_reto) ON DELETE CASCADE,
+
+    CONSTRAINT check_numero_parte CHECK (numero_parte >= 1 AND numero_parte <= 5)
+
+);
+
+
+
+
+
+
+
+CREATE TABLE preguntas_reto (
+
+    id_pregunta_reto integer NOT NULL,
+
+    id_parte_cuento integer NOT NULL, 
+
+    pregunta text NOT NULL,
+
+    puntos_recompensa integer DEFAULT 10,
+
+    CONSTRAINT preguntas_reto_pkey PRIMARY KEY (id_pregunta_reto),
+
+    CONSTRAINT preguntas_reto_id_parte_fkey FOREIGN KEY (id_parte_cuento) REFERENCES partes_cuento_reto(id_parte_cuento) ON DELETE CASCADE
+
+);
+
+
+
+
+
+
+
+ALTER TABLE preguntas_reto 
+
+    DROP CONSTRAINT preguntas_reto_id_reto_fkey;
+
+
+
+ALTER TABLE preguntas_reto 
+
+    DROP COLUMN id_reto,
+
+    DROP COLUMN parte_cuento;
+
+
+
+
+
+ALTER TABLE preguntas_reto 
+
+    ADD COLUMN id_parte_cuento integer NOT NULL;
+
+
+
+
+
+ALTER TABLE preguntas_reto 
+
+    ADD CONSTRAINT preguntas_reto_id_parte_fkey 
+
+    FOREIGN KEY (id_parte_cuento) 
+
+    REFERENCES partes_cuento_reto(id_parte_cuento) 
+
+    ON DELETE CASCADE;
+
+
+
+
+
+
+
+CREATE TABLE intentos_reto (
+
+    id_intento_reto SERIAL PRIMARY KEY,
+
+    id_usuario INTEGER NOT NULL REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
+
+    id_reto INTEGER NOT NULL REFERENCES retos_semanales(id_reto) ON DELETE CASCADE,
+
+    puntaje_obtenido INTEGER DEFAULT 0,
+
+    completado BOOLEAN DEFAULT false,
+
+    fecha_intento TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+);
+
+COMMIT 
+
+
