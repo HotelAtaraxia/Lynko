@@ -503,6 +503,13 @@ CREATE TABLE intentos_reto (
 
 );
 
+-- Agregamos la columna 'es_visible' a la tabla principal
+ALTER TABLE retos_semanales
+ADD COLUMN es_visible BOOLEAN DEFAULT TRUE;
+
+-- (Opcional) Actualizamos los retos existentes para que estén visibles
+UPDATE retos_semanales SET es_visible = TRUE WHERE es_visible IS NULL;
+
 COMMIT 
 
 
